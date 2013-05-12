@@ -1,7 +1,6 @@
 package org.teamblueridge.paste;
 
 import java.io.BufferedReader;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,7 +19,6 @@ import org.apache.http.message.BasicNameValuePair;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.app.Activity;
-import android.content.Context;
 //import android.view.Menu;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -54,47 +52,44 @@ public class MainActivity extends Activity implements OnClickListener {
     }
     public void onClick(View view){
         
-        String FILE1 = "paste_urls";
         textView4=(TextView)findViewById(R.id.textView4);
         editText1 = (EditText)findViewById(R.id.editText1);
         pasteName = editText1.getText().toString();
         editText2 = (EditText)findViewById(R.id.editText2);
         pasteContents = editText2.getText().toString();
         
-        		    // Create a new HttpClient and Post Header
- 		    HttpClient httpclient = new DefaultHttpClient();
- 		    HttpPost httppost = new HttpPost("http://paste.teamblueridge.org/api/create");
+        // Create a new HttpClient and Post Header
+        HttpClient httpclient = new DefaultHttpClient();
+        HttpPost httppost = new HttpPost("http://paste.teamblueridge.org/api/create");
 
- 		    try {
- 		        // Add your data
- 		        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
- 		        nameValuePairs.add(new BasicNameValuePair("title", pasteName));
- 		        nameValuePairs.add(new BasicNameValuePair("text", pasteContents));
- 		        nameValuePairs.add(new BasicNameValuePair("name", "Mobile User"));
- 		        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+        try {
+        	// Add your data
+        	List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+        	nameValuePairs.add(new BasicNameValuePair("title", pasteName));
+        	nameValuePairs.add(new BasicNameValuePair("text", pasteContents));
+        	nameValuePairs.add(new BasicNameValuePair("name", "Mobile User"));
+        	httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
- 		        // Execute HTTP Post Request
- 		        HttpResponse response = httpclient.execute(httppost);
- 		        InputStream in = response.getEntity().getContent();
- 		        StringBuilder stringbuilder = new StringBuilder();
- 		        BufferedReader bfrd = new BufferedReader(new InputStreamReader(in),1024);
- 		        String line;
- 		        while((line = bfrd.readLine()) != null)
- 		            stringbuilder.append(line);
-
- 		        downloadedString = stringbuilder.toString();
-
- 		    } catch (ClientProtocolException e) {
+        	// Execute HTTP Post Request
+        	HttpResponse response = httpclient.execute(httppost);
+        	InputStream in = response.getEntity().getContent();
+        	StringBuilder stringbuilder = new StringBuilder();
+        	BufferedReader bfrd = new BufferedReader(new InputStreamReader(in),1024);
+        	String line;
+        	while((line = bfrd.readLine()) != null)
+        		stringbuilder.append(line);
+        		downloadedString = stringbuilder.toString();
+        } catch (ClientProtocolException e) {
+        		// TODO Auto-generated catch block
+        } catch (IOException e) {
  		        // TODO Auto-generated catch block
- 		    } catch (IOException e) {
- 		        // TODO Auto-generated catch block
- 		    }
+        }
  		    
- 		    textView4.setText(downloadedString);
- 		    editText1.setText("");
- 		    editText2.setText("");
+        textView4.setText(downloadedString);
+        editText1.setText("");
+        editText2.setText("");
   	 
-    }
+	}
 
     
 
