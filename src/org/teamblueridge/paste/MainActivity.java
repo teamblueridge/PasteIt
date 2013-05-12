@@ -44,7 +44,7 @@ public class MainActivity extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
-        //TODO: Split network connection into seprate class rather than disable strict mode
+        //TODO: Split network connection into separate thread rather than disable strict mode
     	StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
     	StrictMode.setThreadPolicy(policy);
  
