@@ -31,8 +31,6 @@ import android.view.View;
 
 public class MainActivity extends Activity implements OnClickListener {
 
-
-	
 	Button button1;
     TextView textView4;
     EditText editText1;
@@ -47,8 +45,9 @@ public class MainActivity extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
-    	    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-    	    StrictMode.setThreadPolicy(policy);
+        //TODO: Split network connection into seprate class rather than disable strict mode
+    	StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+    	StrictMode.setThreadPolicy(policy);
         
         button1 = (Button)findViewById(R.id.button1);
         textView4=(TextView)findViewById(R.id.textView4);
@@ -63,8 +62,7 @@ public class MainActivity extends Activity implements OnClickListener {
     }
     public void onClick(View view){
         
-        String FILE1 = "paste_name";
-        String FILE2 = "paste_contents";
+        String FILE1 = "paste_urls";
         button1 = (Button)findViewById(R.id.button1);
         textView4=(TextView)findViewById(R.id.textView4);
         editText1 = (EditText)findViewById(R.id.editText1);
@@ -73,19 +71,7 @@ public class MainActivity extends Activity implements OnClickListener {
         pasteContents = editText2.getText().toString();
         hello="This is my first project";
         
-        FileOutputStream fos;
- 		try {
- 			fos = openFileOutput(FILE1, Context.MODE_PRIVATE);
- 	        fos.write(pasteName.getBytes());
- 	        fos.close();
- 			fos = openFileOutput(FILE2, Context.MODE_PRIVATE);
- 	        fos.write(pasteContents.getBytes());
- 	        fos.close();
- 		}catch (IOException e) {
- 			// TODO Auto-generated catch block
- 			e.printStackTrace();
- 		}
-         		    // Create a new HttpClient and Post Header
+        		    // Create a new HttpClient and Post Header
  		    HttpClient httpclient = new DefaultHttpClient();
  		    HttpPost httppost = new HttpPost("http://paste.teamblueridge.org/api/create");
 
@@ -115,8 +101,20 @@ public class MainActivity extends Activity implements OnClickListener {
  		    }
  		    
  		    textView4.setText(downloadedString);
+ 		    
+ 	        FileOutputStream fos;
+ 	 		try {
+ 	 			fos = openFileOutput(FILE1, Context.MODE_APPEND);
+ 	 	        fos.write(downloadedString.getBytes());
+ 	 	        fos.close();
+ 	 		}catch (IOException e) {
+ 	 			// TODO Auto-generated catch block
+ 	 			e.printStackTrace();
+ 	 		}
+ 	 
     }
 
+    
 
     /* @Override
     public boolean onCreateOptionsMenu(Menu menu) {
