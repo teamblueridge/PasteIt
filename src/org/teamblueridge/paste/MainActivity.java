@@ -43,7 +43,7 @@ public class MainActivity extends Activity implements OnClickListener {
         setContentView(R.layout.activity_main);
         
         //TODO: Split network connection into separate thread rather than disable strict mode
-    	//Edit's Android's policies to allow a network connection on main thread
+    	//Edits Android's policies to allow a network connection on main thread
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
     	StrictMode.setThreadPolicy(policy);
  
