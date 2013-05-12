@@ -37,7 +37,6 @@ public class MainActivity extends Activity implements OnClickListener {
     String pasteName;
     EditText editText2;
     String pasteContents;
-    String hello;
     String downloadedString= null;
     
     @Override
@@ -55,7 +54,6 @@ public class MainActivity extends Activity implements OnClickListener {
         pasteName = editText1.getText().toString();
         editText2 = (EditText)findViewById(R.id.editText2);
         pasteContents = editText2.getText().toString();
-        hello="This is my first project";
 
 
         button1.setOnClickListener(this);
@@ -69,7 +67,6 @@ public class MainActivity extends Activity implements OnClickListener {
         pasteName = editText1.getText().toString();
         editText2 = (EditText)findViewById(R.id.editText2);
         pasteContents = editText2.getText().toString();
-        hello="This is my first project";
         
         		    // Create a new HttpClient and Post Header
  		    HttpClient httpclient = new DefaultHttpClient();
