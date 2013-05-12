@@ -91,6 +91,8 @@ public class MainActivity extends Activity implements OnClickListener {
  		    }
  		    
  		    textView4.setText(downloadedString);
+ 		    editText1.setText("");
+ 		    editText2.setText("");
  		    
  	        FileOutputStream fos;
  	 		try {
