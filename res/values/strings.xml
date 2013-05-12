@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Team BlueRidge Paste</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="paste_name">Paste Name:</string>
+    <string name="paste_content">Paste Content:</string>
+    <string name="paste_url_label">Paste URL:</string>
+    <string name="paste_button">Paste!</string>
+    <string name="paste_url"/>
+
+</resources>
