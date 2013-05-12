@@ -93,17 +93,7 @@ public class MainActivity extends Activity implements OnClickListener {
  		    textView4.setText(downloadedString);
  		    editText1.setText("");
  		    editText2.setText("");
- 		    
- 	        FileOutputStream fos;
- 	 		try {
- 	 			fos = openFileOutput(FILE1, Context.MODE_APPEND);
- 	 	        fos.write(downloadedString.getBytes());
- 	 	        fos.close();
- 	 		}catch (IOException e) {
- 	 			// TODO Auto-generated catch block
- 	 			e.printStackTrace();
- 	 		}
- 	 
+  	 
     }
 
     
