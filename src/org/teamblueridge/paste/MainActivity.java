@@ -47,21 +47,13 @@ public class MainActivity extends Activity implements OnClickListener {
         //TODO: Split network connection into seprate class rather than disable strict mode
     	StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
     	StrictMode.setThreadPolicy(policy);
-        
-        button1 = (Button)findViewById(R.id.button1);
-        textView4=(TextView)findViewById(R.id.textView4);
-        editText1 = (EditText)findViewById(R.id.editText1);
-        pasteName = editText1.getText().toString();
-        editText2 = (EditText)findViewById(R.id.editText2);
-        pasteContents = editText2.getText().toString();
-
-
+ 
+    	button1 = (Button)findViewById(R.id.button1);
         button1.setOnClickListener(this);
     }
     public void onClick(View view){
         
         String FILE1 = "paste_urls";
-        button1 = (Button)findViewById(R.id.button1);
         textView4=(TextView)findViewById(R.id.textView4);
         editText1 = (EditText)findViewById(R.id.editText1);
         pasteName = editText1.getText().toString();
