@@ -29,8 +29,8 @@ import android.view.View;
 
 public class MainActivity extends Activity implements OnClickListener {
 
-	Button button1;
-    TextView textView4;
+	Button pasteButton;
+    TextView pasteUrlLabel;
     EditText editText1;
     String pasteName;
     EditText editText2;
@@ -47,12 +47,12 @@ public class MainActivity extends Activity implements OnClickListener {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
     	StrictMode.setThreadPolicy(policy);
  
-    	button1 = (Button)findViewById(R.id.button1);
-        button1.setOnClickListener(this);
+    	pasteButton = (Button)findViewById(R.id.button1);
+        pasteButton.setOnClickListener(this);
     }
     public void onClick(View view){
         
-        textView4=(TextView)findViewById(R.id.textView4);
+        pasteUrlLabel=(TextView)findViewById(R.id.textView4);
         editText1 = (EditText)findViewById(R.id.editText1);
         pasteName = editText1.getText().toString();
         editText2 = (EditText)findViewById(R.id.editText2);
@@ -85,7 +85,7 @@ public class MainActivity extends Activity implements OnClickListener {
  		        // TODO Auto-generated catch block
         }
  		    
-        textView4.setText(downloadedString);
+        pasteUrlLabel.setText(downloadedString);
         editText1.setText("");
         editText2.setText("");
   	 
@@ -97,6 +97,8 @@ public class MainActivity extends Activity implements OnClickListener {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        //We don't want the menu display...yet
+        //To enable the menu, return true
         return false;
     }
     
