@@ -19,7 +19,7 @@ import org.apache.http.message.BasicNameValuePair;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.app.Activity;
-//import android.view.Menu;
+import android.view.Menu;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
@@ -93,11 +93,11 @@ public class MainActivity extends Activity implements OnClickListener {
 
     
 
-    /* @Override
+     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }*/
+        return false;
+    }
     
 }
