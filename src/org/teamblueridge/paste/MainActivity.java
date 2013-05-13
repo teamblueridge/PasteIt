@@ -31,10 +31,10 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	Button pasteButton;
     TextView pasteUrlLabel;
-    EditText editText1;
-    String pasteName;
-    EditText editText2;
-    String pasteContents;
+    EditText pasteNameEditText;
+    String pasteNameString;
+    EditText pasteContentEditText;
+    String pasteContentsString;
     String downloadedString= null;
     
     @Override
@@ -53,10 +53,10 @@ public class MainActivity extends Activity implements OnClickListener {
     public void onClick(View view){
         
         pasteUrlLabel=(TextView)findViewById(R.id.textView4);
-        editText1 = (EditText)findViewById(R.id.editText1);
-        pasteName = editText1.getText().toString();
-        editText2 = (EditText)findViewById(R.id.editText2);
-        pasteContents = editText2.getText().toString();
+        pasteNameEditText = (EditText)findViewById(R.id.editText1);
+        pasteNameString = pasteNameEditText.getText().toString();
+        pasteContentEditText = (EditText)findViewById(R.id.editText2);
+        pasteContentsString = pasteContentEditText.getText().toString();
         
         // Create a new HttpClient and Post Header
         HttpClient httpclient = new DefaultHttpClient();
@@ -65,8 +65,8 @@ public class MainActivity extends Activity implements OnClickListener {
         try {
         	// Add your data
         	List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-        	nameValuePairs.add(new BasicNameValuePair("title", pasteName));
-        	nameValuePairs.add(new BasicNameValuePair("text", pasteContents));
+        	nameValuePairs.add(new BasicNameValuePair("title", pasteNameString));
+        	nameValuePairs.add(new BasicNameValuePair("text", pasteContentsString));
         	nameValuePairs.add(new BasicNameValuePair("name", "Mobile User"));
         	httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
@@ -86,8 +86,8 @@ public class MainActivity extends Activity implements OnClickListener {
         }
  		    
         pasteUrlLabel.setText(downloadedString);
-        editText1.setText("");
-        editText2.setText("");
+        pasteNameEditText.setText("");
+        pasteContentEditText.setText("");
   	 
 	}
 
