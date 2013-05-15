@@ -34,7 +34,7 @@ public class MainActivity extends Activity implements OnClickListener {
     EditText pasteNameEditText;
     String pasteNameString;
     EditText pasteContentEditText;
-    String pasteContentsString;
+    String pasteContentString;
     String downloadedString= null;
     
     @Override
@@ -56,7 +56,7 @@ public class MainActivity extends Activity implements OnClickListener {
         pasteNameEditText = (EditText)findViewById(R.id.editText1);
         pasteNameString = pasteNameEditText.getText().toString();
         pasteContentEditText = (EditText)findViewById(R.id.editText2);
-        pasteContentsString = pasteContentEditText.getText().toString();
+        pasteContentString = pasteContentEditText.getText().toString();
         
         // Create a new HttpClient and Post Header
         HttpClient httpclient = new DefaultHttpClient();
@@ -66,7 +66,7 @@ public class MainActivity extends Activity implements OnClickListener {
         	// Add your data
         	List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
         	nameValuePairs.add(new BasicNameValuePair("title", pasteNameString));
-        	nameValuePairs.add(new BasicNameValuePair("text", pasteContentsString));
+        	nameValuePairs.add(new BasicNameValuePair("text", pasteContentString));
         	nameValuePairs.add(new BasicNameValuePair("name", "Mobile User"));
         	httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
