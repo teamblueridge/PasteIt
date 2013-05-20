@@ -28,71 +28,71 @@ import java.util.List;
 
 public class MainActivity extends Activity implements OnClickListener {
 
-	Button pasteButton;
+    Button pasteButton;
     TextView pasteUrlLabel;
     EditText pasteNameEditText;
     String pasteNameString;
     EditText pasteContentEditText;
     String pasteContentString;
     String downloadedString= null;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+
         //TODO: Split network connection into separate thread rather than disable strict mode
-    	//Edits Android's policies to allow a network connection on main thread
+        //Edits Android's policies to allow a network connection on main thread
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-    	StrictMode.setThreadPolicy(policy);
- 
-    	pasteButton = (Button)findViewById(R.id.button1);
+        StrictMode.setThreadPolicy(policy);
+
+        pasteButton = (Button)findViewById(R.id.button1);
         pasteButton.setOnClickListener(this);
     }
     public void onClick(View view){
-        
+
         pasteUrlLabel=(TextView)findViewById(R.id.textView4);
         pasteNameEditText = (EditText)findViewById(R.id.editText1);
         pasteNameString = pasteNameEditText.getText().toString();
         pasteContentEditText = (EditText)findViewById(R.id.editText2);
         pasteContentString = pasteContentEditText.getText().toString();
-        
+
         // Create a new HttpClient and Post Header
         HttpClient httpclient = new DefaultHttpClient();
         HttpPost httppost = new HttpPost("http://paste.teamblueridge.org/api/create");
 
         try {
-        	// Add your data
-        	List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-        	nameValuePairs.add(new BasicNameValuePair("title", pasteNameString));
-        	nameValuePairs.add(new BasicNameValuePair("text", pasteContentString));
-        	nameValuePairs.add(new BasicNameValuePair("name", "Mobile User"));
-        	httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            // Add your data
+            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+            nameValuePairs.add(new BasicNameValuePair("title", pasteNameString));
+            nameValuePairs.add(new BasicNameValuePair("text", pasteContentString));
+            nameValuePairs.add(new BasicNameValuePair("name", "Mobile User"));
+            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
-        	// Execute HTTP Post Request
-        	HttpResponse response = httpclient.execute(httppost);
-        	InputStream in = response.getEntity().getContent();
-        	StringBuilder stringbuilder = new StringBuilder();
-        	BufferedReader bfrd = new BufferedReader(new InputStreamReader(in),1024);
-        	String line;
-        	while((line = bfrd.readLine()) != null)
-        		stringbuilder.append(line);
-        		downloadedString = stringbuilder.toString();
+            // Execute HTTP Post Request
+            HttpResponse response = httpclient.execute(httppost);
+            InputStream in = response.getEntity().getContent();
+            StringBuilder stringbuilder = new StringBuilder();
+            BufferedReader bfrd = new BufferedReader(new InputStreamReader(in),1024);
+            String line;
+            while((line = bfrd.readLine()) != null)
+                stringbuilder.append(line);
+            downloadedString = stringbuilder.toString();
         } catch (ClientProtocolException e) {
-        		// TODO Auto-generated catch block
+            // TODO Auto-generated catch block
         } catch (IOException e) {
- 		        // TODO Auto-generated catch block
+            // TODO Auto-generated catch block
         }
- 		    
+
         pasteUrlLabel.setText(downloadedString);
         pasteNameEditText.setText("");
         pasteContentEditText.setText("");
-  	 
-	}
 
-    
+    }
 
-     @Override
+
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
@@ -100,5 +100,5 @@ public class MainActivity extends Activity implements OnClickListener {
         //To enable the menu, return true
         return false;
     }
-    
+
 }
