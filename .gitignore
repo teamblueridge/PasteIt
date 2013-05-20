@@ -3,4 +3,7 @@ gen/
 .idea/
 .settings/
 out/
+build/
 TBRPaste.iml
+local.properties
+.gradle
