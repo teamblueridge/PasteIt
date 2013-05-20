@@ -1,2 +1,6 @@
 bin/
 gen/
+.idea/
+.settings/
+out/
+TBRPaste.iml
