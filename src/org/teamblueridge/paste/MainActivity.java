@@ -44,7 +44,6 @@ public class MainActivity extends Activity implements OnClickListener {
     String pasteContentString;
     String pasteUrlString;
     String userName;
-
     // Progress Dialog
     private ProgressDialog pDialog;
 
