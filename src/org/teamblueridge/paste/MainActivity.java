@@ -40,7 +40,7 @@ public class MainActivity extends Activity implements OnClickListener {
     String pasteNameString;
     EditText pasteContentEditText;
     String pasteContentString;
-    String downloadedString;
+    String pasteUrlString;
     
     // Progress Dialog
 	private ProgressDialog pDialog;
@@ -69,7 +69,7 @@ public class MainActivity extends Activity implements OnClickListener {
         pasteContentEditText.setText("");
 
 
-        //Call toast as downloadedString (the paste URL) is being copied to the clipboard
+        //Call toast as pasteUrl is being copied to the clipboard
         Context context = getApplicationContext();
         CharSequence text = "Paste URL has been copied to the clipboard.";
         int duration = Toast.LENGTH_SHORT;
@@ -122,7 +122,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	            String line;
 	            while((line = bfrd.readLine()) != null)
 	                stringbuilder.append(line);
-	            downloadedString = stringbuilder.toString();
+                pasteUrlString = stringbuilder.toString();
 	        } catch (ClientProtocolException e) {
 	            Log.d("TeamBlueridge", e.toString());
 	        } catch (IOException e) {
@@ -139,13 +139,13 @@ public class MainActivity extends Activity implements OnClickListener {
 			// finally set the URL for the user
 			runOnUiThread(new Runnable() {
 				public void run() {
-					pasteUrlLabel.setText(downloadedString);
+					pasteUrlLabel.setText(pasteUrlString);
 				}
 			});
 
-            //Copy downloadedString to clipboard
+            //Copy pasteUrl to clipboard
             ClipboardManager clipboard =  (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText("TBRPaste", downloadedString);
+            ClipData clip = ClipData.newPlainText("TBRPaste", pasteUrlString);
             clipboard.setPrimaryClip(clip);
         }
 	}
