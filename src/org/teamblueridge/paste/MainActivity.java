@@ -7,6 +7,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.content.ClipboardManager;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -139,8 +141,12 @@ public class MainActivity extends Activity implements OnClickListener {
 			// finally set the URL for the user
 			runOnUiThread(new Runnable() {
 				public void run() {
-					pasteUrlLabel.setText(pasteUrlString);
-				}
+                    //Create a clickable link from pasteUrlString for user (opens in web browser)
+                    String linkText = "<a href=\""+pasteUrlString+"\">"+pasteUrlString+"</a>";
+                    pasteUrlLabel.setText(Html.fromHtml(linkText));
+                    pasteUrlLabel.setMovementMethod(LinkMovementMethod.getInstance());
+
+                }
 			});
 
             //Copy pasteUrl to clipboard
