@@ -2,8 +2,11 @@ package org.teamblueridge.paste;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.content.ClipboardManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -11,6 +14,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -63,6 +67,13 @@ public class MainActivity extends Activity implements OnClickListener {
         //Clear out the old data in the paste
         pasteNameEditText.setText("");
         pasteContentEditText.setText("");
+
+
+        //Call toast as downloadedString (the paste URL) is being copied to the clipboard
+        Context context = getApplicationContext();
+        CharSequence text = "Paste URL has been copied to the clipboard.";
+        int duration = Toast.LENGTH_SHORT;
+        Toast.makeText(context, text, duration).show();
     }
 
 
@@ -117,8 +128,8 @@ public class MainActivity extends Activity implements OnClickListener {
 	        } catch (IOException e) {
 	        	Log.d("TeamBlueridge", e.toString());
 	        }
-			return null;
-		}
+            return null;
+        }
 
 		//Since we used a dialog, we need to disable it
 		protected void onPostExecute(String paste_url) {
@@ -131,6 +142,11 @@ public class MainActivity extends Activity implements OnClickListener {
 					pasteUrlLabel.setText(downloadedString);
 				}
 			});
-		}
+
+            //Copy downloadedString to clipboard
+            ClipboardManager clipboard =  (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("TBRPaste", downloadedString);
+            clipboard.setPrimaryClip(clip);
+        }
 	}
 }
