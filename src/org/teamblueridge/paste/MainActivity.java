@@ -2,15 +2,17 @@ package org.teamblueridge.paste;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.ClipData;
-import android.content.Context;
+import android.content.*;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.content.ClipboardManager;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -43,6 +45,7 @@ public class MainActivity extends Activity implements OnClickListener {
     EditText pasteContentEditText;
     String pasteContentString;
     String pasteUrlString;
+    String userName;
     
     // Progress Dialog
 	private ProgressDialog pDialog;
@@ -78,17 +81,30 @@ public class MainActivity extends Activity implements OnClickListener {
         Toast.makeText(context, text, duration).show();
     }
 
-
+    public void onResume() {
+        super.onResume();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        if(!prefs.getString("pref_name","").isEmpty()){
+            userName = prefs.getString("pref_name","");
+        }else {
+            userName = "Mobile User";
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        //We don't want the menu display...yet
-        //To enable the menu, return true
-        return false;
+        return true;
     }
-
+    public boolean onOptionsItemSelected(MenuItem item){
+        if (item.getItemId()==R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        } else {
+            return false;
+        }
+    }
     //This is the code for the async task used for http traffic
 	class uploadPaste extends AsyncTask<String, String, String> {
 
@@ -113,7 +129,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	            List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 	            nameValuePairs.add(new BasicNameValuePair("title", pasteNameString));
 	            nameValuePairs.add(new BasicNameValuePair("text", pasteContentString));
-	            nameValuePairs.add(new BasicNameValuePair("name", "Mobile User"));
+	            nameValuePairs.add(new BasicNameValuePair("name", userName));
 	            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
 	            // Execute HTTP Post Request
@@ -154,5 +170,6 @@ public class MainActivity extends Activity implements OnClickListener {
             ClipData clip = ClipData.newPlainText("TBRPaste", pasteUrlString);
             clipboard.setPrimaryClip(clip);
         }
+
 	}
 }
