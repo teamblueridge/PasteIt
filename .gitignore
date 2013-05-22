@@ -7,3 +7,5 @@ build/
 TBRPaste.iml
 local.properties
 .gradle
+TBRPaste-release.apk
+Thumbs.db
