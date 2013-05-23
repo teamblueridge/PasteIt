@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--Main UI-->
+    <string name="app_name">Team BlueRidge Paste</string>
+    <string name="app_name_short">TBR Paste</string>
+    <string name="paste_name">Klever Naam:</string>
+    <string name="paste_content">Klever Inhoud:</string>
+    <string name="paste_url_label">Klever URL:</string>
+    <string name="paste_button">Verstuur</string>
+    <string name="paste_url"/>
+
+    <!--Preferences-->
+    <string name="pref_name">Naam</string>
+    <string name="pref_name_summary">Uw naam getoond in klevertjes</string>
+
+    <!--Menu-->
+    <string name="action_settings">Instellingen</string>
+
+</resources>

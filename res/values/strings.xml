@@ -7,7 +7,7 @@
     <string name="paste_name">Paste Name:</string>
     <string name="paste_content">Paste Content:</string>
     <string name="paste_url_label">Paste URL:</string>
-    <string name="paste_button">Paste!</string>
+    <string name="paste_button">Send</string>
     <string name="paste_url"/>
 
     <!--Preferences-->

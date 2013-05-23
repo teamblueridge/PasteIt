@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--Main UI-->
+    <string name="app_name">Team BlueRidge Paste</string>
+    <string name="app_name_short">TBR Paste</string>
+    <string name="paste_name">Etiquette Nom:</string>
+    <string name="paste_content">Etiquette Contenu:</string>
+    <string name="paste_url_label">Etiquette URL:</string>
+    <string name="paste_button">Envoye</string>
+    <string name="paste_url"/>
+
+    <!--Preferences-->
+    <string name="pref_name">Nom</string>
+    <string name="pref_name_summary">Votre nom sur les étiquettes</string>
+
+    <!--Menu-->
+    <string name="action_settings">Paramètres</string>
+
+</resources>
