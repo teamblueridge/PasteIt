@@ -24,13 +24,14 @@
         android:layout_alignLeft="@+id/textView1"
         android:layout_below="@+id/textView1"
         android:ems="10"
-        android:inputType="textCapWords" >
+        android:inputType="textCapSentences">
 
         <requestFocus />
     </EditText>
 
     <TextView
         android:id="@+id/textView2"
+        android:gravity="top"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/editText1"
@@ -47,25 +48,26 @@
         android:layout_below="@+id/textView2"
         android:layout_marginTop="14dp"
         android:ems="10"
-        android:inputType="textMultiLine" />
+        android:inputType="textMultiLine"
+        android:layout_above="@+id/textView3"
+        android:gravity="top"
+        />
 
     <Button
         android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/paste_button"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="67dp"
-        android:text="@string/paste_button" />
+        android:layout_centerHorizontal="true"/>
 
     <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/editText2"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="23dp"
-        android:text="@string/paste_url_label" />
+        android:text="@string/paste_url_label"
+        android:layout_above="@+id/button1"
+        android:layout_alignLeft="@+id/editText2"/>
 
     <TextView
         android:id="@+id/textView4"
