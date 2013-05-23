@@ -9,6 +9,8 @@
     <string name="paste_url_label">Klever URL:</string>
     <string name="paste_button">Verstuur</string>
     <string name="paste_url"/>
+    <string name="paste_toast">Klever URL werd gekopieerd naar het klembord.</string>
+    <string name="paste_upload">Uploaden. Even geduld a.u.b.</string>
 
     <!--Preferences-->
     <string name="pref_name">Naam</string>

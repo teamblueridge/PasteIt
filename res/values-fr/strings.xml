@@ -9,6 +9,8 @@
     <string name="paste_url_label">Etiquette URL:</string>
     <string name="paste_button">Envoye</string>
     <string name="paste_url"/>
+    <string name="paste_toast">Etiquette URL est copié aux presse-papiers.</string>
+    <string name="paste_upload">Uploading. Attendez s.v.p.</string>
 
     <!--Preferences-->
     <string name="pref_name">Nom</string>

@@ -44,6 +44,8 @@ public class MainActivity extends Activity implements OnClickListener {
     String pasteContentString;
     String pasteUrlString;
     String userName;
+    String uploadingText = getResources().getString(R.string.paste_upload);
+    String toastText = getResources().getString(R.string.paste_toast);
     // Progress Dialog
     private ProgressDialog pDialog;
 
@@ -73,7 +75,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
         //Call toast as pasteUrl is being copied to the clipboard
         Context context = getApplicationContext();
-        CharSequence text = "Paste URL has been copied to the clipboard.";
+        CharSequence text = toastText;
         int duration = Toast.LENGTH_SHORT;
         Toast.makeText(context, text, duration).show();
     }
@@ -112,7 +114,7 @@ public class MainActivity extends Activity implements OnClickListener {
         protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(MainActivity.this);
-            pDialog.setMessage("Uploading Paste. Please wait...");
+            pDialog.setMessage(uploadingText);
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);
             pDialog.show();
