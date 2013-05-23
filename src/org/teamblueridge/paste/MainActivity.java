@@ -44,8 +44,8 @@ public class MainActivity extends Activity implements OnClickListener {
     String pasteContentString;
     String pasteUrlString;
     String userName;
-    String uploadingText = getResources().getString(R.string.paste_upload);
-    String toastText = getResources().getString(R.string.paste_toast);
+    String uploadingText;
+    String toastText;
     // Progress Dialog
     private ProgressDialog pDialog;
 
@@ -72,12 +72,14 @@ public class MainActivity extends Activity implements OnClickListener {
         pasteNameEditText.setText("");
         pasteContentEditText.setText("");
 
-
         //Call toast as pasteUrl is being copied to the clipboard
-        Context context = getApplicationContext();
-        CharSequence text = toastText;
-        int duration = Toast.LENGTH_SHORT;
-        Toast.makeText(context, text, duration).show();
+        if (!pasteContentString.isEmpty()) {
+            toastText = getResources().getString(R.string.paste_toast);
+            Context context = getApplicationContext();
+            CharSequence text = toastText;
+            int duration = Toast.LENGTH_SHORT;
+            Toast.makeText(context, text, duration).show();
+        }
     }
 
     public void onResume() {
@@ -112,6 +114,7 @@ public class MainActivity extends Activity implements OnClickListener {
         //Let the user know that something is happening.
         @Override
         protected void onPreExecute() {
+            uploadingText = getResources().getString(R.string.paste_upload);
             super.onPreExecute();
             pDialog = new ProgressDialog(MainActivity.this);
             pDialog.setMessage(uploadingText);
@@ -124,30 +127,35 @@ public class MainActivity extends Activity implements OnClickListener {
         protected String doInBackground(String... args) {
             HttpClient httpclient = new DefaultHttpClient();
             HttpPost httppost = new HttpPost("http://paste.teamblueridge.org/api/create");
+            //if no paste content, do not even send to server
+            if (!pasteContentString.isEmpty()) {
+                try {
+                    // Add your data
+                    List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+                    nameValuePairs.add(new BasicNameValuePair("title", pasteNameString));
+                    nameValuePairs.add(new BasicNameValuePair("text", pasteContentString));
+                    nameValuePairs.add(new BasicNameValuePair("name", userName));
+                    httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
-            try {
-                // Add your data
-                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-                nameValuePairs.add(new BasicNameValuePair("title", pasteNameString));
-                nameValuePairs.add(new BasicNameValuePair("text", pasteContentString));
-                nameValuePairs.add(new BasicNameValuePair("name", userName));
-                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-                // Execute HTTP Post Request
-                HttpResponse response = httpclient.execute(httppost);
-                InputStream in = response.getEntity().getContent();
-                StringBuilder stringbuilder = new StringBuilder();
-                BufferedReader bfrd = new BufferedReader(new InputStreamReader(in), 1024);
-                String line;
-                while ((line = bfrd.readLine()) != null)
-                    stringbuilder.append(line);
-                pasteUrlString = stringbuilder.toString();
-            } catch (ClientProtocolException e) {
-                Log.d("TeamBlueridge", e.toString());
-            } catch (IOException e) {
-                Log.d("TeamBlueridge", e.toString());
+                    // Execute HTTP Post Request
+                    HttpResponse response = httpclient.execute(httppost);
+                    InputStream in = response.getEntity().getContent();
+                    StringBuilder stringbuilder = new StringBuilder();
+                    BufferedReader bfrd = new BufferedReader(new InputStreamReader(in), 1024);
+                    String line;
+                    while ((line = bfrd.readLine()) != null)
+                        stringbuilder.append(line);
+                    pasteUrlString = stringbuilder.toString();
+                } catch (ClientProtocolException e) {
+                    Log.d("TeamBlueridge", e.toString());
+                } catch (IOException e) {
+                    Log.d("TeamBlueridge", e.toString());
+                }
+                return null;
+            } else {
+                pasteUrlString = "Error: Missing paste text"; //Do not translate
+                return null;
             }
-            return null;
         }
 
         //Since we used a dialog, we need to disable it
@@ -158,18 +166,23 @@ public class MainActivity extends Activity implements OnClickListener {
             // finally set the URL for the user
             runOnUiThread(new Runnable() {
                 public void run() {
-                    //Create a clickable link from pasteUrlString for user (opens in web browser)
-                    String linkText = "<a href=\"" + pasteUrlString + "\">" + pasteUrlString + "</a>";
-                    pasteUrlLabel.setText(Html.fromHtml(linkText));
-                    pasteUrlLabel.setMovementMethod(LinkMovementMethod.getInstance());
+                    //if pasteUrlString says no paste text, do not hyperlink & do not clipboard
+                    if (!pasteUrlString.equals("Error: Missing paste text")) {
+                        //Create a clickable link from pasteUrlString for user (opens in web browser)
+                        String linkText = "<a href=\"" + pasteUrlString + "\">" + pasteUrlString + "</a>";
+                        pasteUrlLabel.setText(Html.fromHtml(linkText));
+                        pasteUrlLabel.setMovementMethod(LinkMovementMethod.getInstance());
 
+                        //Copy pasteUrl to clipboard
+                        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                        ClipData clip = ClipData.newPlainText("TBRPaste", pasteUrlString);
+                        clipboard.setPrimaryClip(clip);
+                    } else {
+                        pasteUrlLabel.setText(pasteUrlString);
+                    }
                 }
             });
 
-            //Copy pasteUrl to clipboard
-            ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText("TBRPaste", pasteUrlString);
-            clipboard.setPrimaryClip(clip);
         }
 
     }
