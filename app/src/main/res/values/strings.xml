@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--General; DO NOT TRANSLATE-->
+    <string name="app_name" translatable="no">Paste It</string>
+    <string name="version_name" translatable="no">3.0</string>
+    <string name="tbr" translatable="no">Team BlueRidge</string>
+
+    <!--Main UI-->
+    <string name="paste_name">Paste Name</string>
+    <string name="paste_content">Paste Content</string>
+    <string name="paste_url_label">Paste URL:</string>
+    <string name="paste_url" />
+    <string name="paste_noText">Please fill in the text boxes</string>
+    <string name="paste_toast">Paste URL has been copied to the clipboard.</string>
+    <string name="paste_upload">Uploading paste. Please wait…</string>
+
+    <!--Preferences-->
+    <string name="pref_general">General</string>
+    <string name="pref_name">Name</string>
+    <string name="pref_name_summary">Your name to be shown on pastes</string>
+    <string name="pref_domain">Domain</string>
+    <string name="pref_domain_summary">Domain where Stikked is installed</string>
+    <string name="pref_url">Display URL</string>
+    <string name="pref_url_summary">Appears under the content box</string>
+    <string name="pref_about">About</string>
+    <string name="pref_version">Version</string>
+    <string name="pref_created_by">Created By</string>
+
+    <!--Menu-->
+    <string name="action_paste">Paste!</string>
+    <string name="action_settings">Settings</string>
+
+</resources>

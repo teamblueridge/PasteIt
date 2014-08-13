@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/pref_general" >
+        <EditTextPreference
+            android:key="pref_name"
+            android:title="@string/pref_name"
+            android:summary="@string/pref_name_summary"
+            android:defaultValue="Mobile User"
+            android:inputType="textPersonName"/>
+        <EditTextPreference
+            android:key="pref_domain"
+            android:title="@string/pref_domain"
+            android:summary="@string/pref_domain_summary"
+            android:defaultValue="paste.teamblueridge.org"
+            android:inputType="textUri"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_about" >
+        <Preference android:title="Powered by Stikked">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/claudehohl/Stikked"
+                />
+        </Preference>
+        <Preference android:title="@string/pref_created_by"
+            android:summary="@string/tbr">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://teamblueridge.org"
+                />
+        </Preference>
+        <Preference android:title="@string/pref_version" android:summary="@string/version_name" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
