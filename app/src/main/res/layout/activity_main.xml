@@ -7,12 +7,13 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:textAlignment="textStart"
+    android:layout_gravity="start"
     tools:context=".MainActivity" >
 
     <EditText
         android:id="@+id/editText1"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:ems="10"
         android:inputType="textCapSentences"
         android:hint="@string/paste_name"
@@ -37,7 +38,7 @@
     <TextView
         android:id="@+id/textView3"
         android:layout_width="80dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:text="@string/paste_url_label"
         android:textStyle="bold"
         android:layout_alignTop="@+id/textView4"
@@ -47,7 +48,7 @@
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
-        android:layout_height="45dp"
+        android:layout_height="48dp"
         android:text="@string/paste_url"
         android:layout_alignRight="@+id/editText2"
         android:layout_toRightOf="@+id/textView3"
