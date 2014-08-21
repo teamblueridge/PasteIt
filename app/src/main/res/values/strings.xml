@@ -3,7 +3,7 @@
 
     <!--General; DO NOT TRANSLATE-->
     <string name="app_name" translatable="no">Paste It</string>
-    <string name="version_name" translatable="no">3.0</string>
+    <string name="version_name" translatable="no">3.0.1</string>
     <string name="tbr" translatable="no">Team BlueRidge</string>
 
     <!--Main UI-->

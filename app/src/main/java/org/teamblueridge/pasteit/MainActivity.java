@@ -161,14 +161,20 @@ public class MainActivity extends Activity {
         // post the content in the background while showing the dialog
         protected String doInBackground(String... args) {
             HttpClient httpclient = new DefaultHttpClient();
+            // Ensure that the paste URL is set, if not, default to Team BlueRidge
             if (!prefs.getString("pref_domain", "").isEmpty()) {
                 pasteDomain = prefs.getString("pref_domain", "");
             } else {
-                pasteDomain = "paste.teamblueridge.org";
+                pasteDomain = "https://paste.teamblueridge.org";
             }
-            uploadUrl = "https://" + pasteDomain + "/api/create?apikey=tbrpaste";
+            // Only set the API key for Team BlueRidge
+            if (pasteDomain.equals("https://paste.teamblueridge.org")) {
+                uploadUrl = pasteDomain + "/api/create?apikey=tbrpaste";
+            }
+            else {
+                uploadUrl = pasteDomain + "/api/create";
+            }
             HttpPost httppost = new HttpPost(uploadUrl);
-
             try {
                 // HTTP Header data
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
