@@ -3,7 +3,7 @@
 
     <!--General; DO NOT TRANSLATE-->
     <string name="app_name" translatable="false">Paste It</string>
-    <string name="version_name" translatable="false">3.0.1</string>
+    <string name="version_name" translatable="false">3.1.0</string>
     <string name="tbr" translatable="false">Team BlueRidge</string>
 
     <!--Main UI-->
@@ -11,7 +11,7 @@
     <string name="paste_content">Paste Content</string>
     <string name="paste_url_label">Paste URL:</string>
     <string name="paste_url" translatable="false" />
-    <string name="paste_noText">Please fill in the text boxes</string>
+    <string name="paste_no_text">Please fill in the text boxes</string>
     <string name="paste_toast">Paste URL has been copied to the clipboard.</string>
     <string name="paste_upload">Uploading paste. Please wait…</string>
 

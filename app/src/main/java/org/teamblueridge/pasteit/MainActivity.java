@@ -1,11 +1,11 @@
 package org.teamblueridge.pasteit;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -37,60 +37,40 @@ import java.util.List;
 
 public class MainActivity extends Activity {
 
-    TextView pasteUrlLabel;
-    TextView urlTextView;
-    EditText pasteNameEditText;
-    String pasteNameString;
-    EditText pasteContentEditText;
-    String pasteContentString;
     String pasteUrlString;
-    String userName;
     String pasteDomain;
     String uploadUrl;
     String uploadingText;
+    String userName;
     String toastText;
-    SharedPreferences prefs;
-    // Progress Dialog
     private ProgressDialog pDialog;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        //Just define the variables here.
-        pasteUrlLabel = (TextView) findViewById(R.id.textView4);
-        pasteNameEditText = (EditText) findViewById(R.id.editText1);
-        pasteNameString = pasteNameEditText.getText().toString();
-        pasteContentEditText = (EditText) findViewById(R.id.editText2);
-        pasteContentString = pasteContentEditText.getText().toString();
-        urlTextView = (TextView) findViewById(R.id.textView3);
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-
-    }
-
-    public void onResume() {
-        super.onResume();
-        if (!prefs.getString("pref_name", "").isEmpty()) {
-            userName = prefs.getString("pref_name", "");
-        } else {
-            userName = "Mobile User";
+        // Set-up the paste fragment and give it a name so we can track it
+        if (savedInstanceState == null) {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.container, new PasteFragment(), "PasteFragment")
+                    .commit();
         }
 
-        //Hide URL text depending on preferences
-        setContentView(R.layout.activity_main);
-        //Just define the variables here.
-        pasteUrlLabel = (TextView) findViewById(R.id.textView4);
-        pasteNameEditText = (EditText) findViewById(R.id.editText1);
-        pasteNameString = pasteNameEditText.getText().toString();
-        pasteContentEditText = (EditText) findViewById(R.id.editText2);
-        pasteContentString = pasteContentEditText.getText().toString();
-        urlTextView = (TextView) findViewById(R.id.textView3);
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        // Set-up up navigation
+        getFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                int stackHeight = getFragmentManager().getBackStackEntryCount();
+                if (stackHeight > 0) { // if we have something on the stack (doesn't include the current shown fragment)
+                    getActionBar().setHomeButtonEnabled(true);
+                    getActionBar().setDisplayHomeAsUpEnabled(true);
+                } else {
+                    getActionBar().setDisplayHomeAsUpEnabled(false);
+                    getActionBar().setHomeButtonEnabled(false);
+                }
+            }
 
-
+        });
     }
 
     @Override
@@ -100,51 +80,76 @@ public class MainActivity extends Activity {
         return true;
     }
 
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
-            return true;
-        } else {
-            if (item.getItemId() == R.id.action_paste) {
-                pasteUrlLabel = (TextView) findViewById(R.id.textView4);
-                //Hide URL text depending on preferences
-                pasteNameEditText = (EditText) findViewById(R.id.editText1);
-                pasteNameString = pasteNameEditText.getText().toString();
-                pasteContentEditText = (EditText) findViewById(R.id.editText2);
-                pasteContentString = pasteContentEditText.getText().toString();
-
-                //Upload if paste content is not empty, otherwise show error message
-                if (!pasteContentString.isEmpty()) {
-                    //Execute paste upload in separate thread
-                    new uploadPaste().execute();
-
-                    //Call toast that pasteUrl is copied to the clipboard
-                    toastText = getResources().getString(R.string.paste_toast);
-                    Context context = getApplicationContext();
-                    CharSequence text = toastText;
-                    int duration = Toast.LENGTH_SHORT;
-                    Toast.makeText(context, text, duration).show();
-                } else {
-                    toastText = getResources().getString(R.string.paste_noText);
-                    Context context = getApplicationContext();
-                    CharSequence text = toastText;
-                    int duration = Toast.LENGTH_SHORT;
-                    Toast.makeText(context, text, duration).show();
-                }
-
-                //Clear out the old data in the paste
-                pasteNameEditText.setText("");
-                pasteContentEditText.setText("");
-
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.action_paste:
+                doPaste();
                 return true;
-            } else {
-                return false;
-            }
+            case R.id.action_settings:
+                openSettings();
+                return true;
+            case android.R.id.home:
+                getFragmentManager().popBackStack();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
-    //This is the code for the async task used for http traffic
+    // Switch to the settings fragment
+    public void openSettings() {
+        // Only open settings if it's not already open
+        try {
+            if (!getFragmentManager().findFragmentByTag("SettingsFragment").isVisible()) {
+
+            }
+        } catch (NullPointerException e) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container, new SettingsFragment(), "SettingsFragment")
+                    .addToBackStack("SettingsFragment")
+                    .commit();
+        }
+
+    }
+
+    // Start pasting
+    public void doPaste() {
+        // Only paste if at the paste fragment
+        if (getFragmentManager().findFragmentByTag("PasteFragment").isVisible()) {
+            EditText pasteNameEditText = (EditText) findViewById(R.id.editText1);
+            EditText pasteContentEditText = (EditText) findViewById(R.id.editText2);
+            String pasteContentString = pasteContentEditText.getText().toString();
+            if (!pasteContentString.isEmpty()) {
+                new uploadPaste().execute();
+                toastText = getResources().getString(R.string.paste_toast);
+                pasteNameEditText.setText("");
+                pasteContentEditText.setText("");
+            } else {
+                toastText = getResources().getString(R.string.paste_no_text);
+            }
+            Context context = getApplicationContext();
+            CharSequence text = toastText;
+            int duration = Toast.LENGTH_SHORT;
+            Toast.makeText(context, text, duration).show();
+        }
+    }
+
+    public void setActionBarTitle(String title){
+        getActionBar().setTitle(title);
+    }
+
     class uploadPaste extends AsyncTask<String, String, String> {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        TextView pasteUrlLabel = (TextView) findViewById(R.id.textView4);
+        EditText pasteNameEditText = (EditText) findViewById(R.id.editText1);
+        String pasteNameString = pasteNameEditText.getText().toString();
+        EditText pasteContentEditText = (EditText) findViewById(R.id.editText2);
+        String pasteContentString = pasteContentEditText.getText().toString();
 
         //Let the user know that something is happening.
         @Override
@@ -170,9 +175,13 @@ public class MainActivity extends Activity {
             // Only set the API key for Team BlueRidge
             if (pasteDomain.equals("https://paste.teamblueridge.org")) {
                 uploadUrl = pasteDomain + "/api/create?apikey=tbrpaste";
-            }
-            else {
+            } else {
                 uploadUrl = pasteDomain + "/api/create";
+            }
+            if (!prefs.getString("pref_name", "").isEmpty()) {
+                userName = prefs.getString("pref_name", "");
+            } else {
+                userName = "Mobile User";
             }
             HttpPost httppost = new HttpPost(uploadUrl);
             try {
@@ -206,7 +215,7 @@ public class MainActivity extends Activity {
             pDialog.dismiss();
             //Copy pasteUrl to clipboard
             ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText("TBRPaste", pasteUrlString);
+            ClipData clip = ClipData.newPlainText("PasteIt", pasteUrlString);
             clipboard.setPrimaryClip(clip);
 
             //Display paste URL if allowed in preferences
@@ -216,8 +225,6 @@ public class MainActivity extends Activity {
                     String linkText = "<a href=\"" + pasteUrlString + "\">" + pasteUrlString + "</a>";
                     pasteUrlLabel.setText(Html.fromHtml(linkText));
                     pasteUrlLabel.setMovementMethod(LinkMovementMethod.getInstance());
-
-
                 }
             });
         }

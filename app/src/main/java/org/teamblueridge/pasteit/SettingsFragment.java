@@ -10,5 +10,6 @@ public class SettingsFragment extends PreferenceFragment {
 
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences);
+        ((MainActivity) getActivity()).setActionBarTitle(getString(R.string.action_settings));
     }
 }

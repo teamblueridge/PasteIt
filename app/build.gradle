@@ -8,8 +8,8 @@ android {
         applicationId "org.teamblueridge.pasteit"
         minSdkVersion 16
         targetSdkVersion 20
-        versionCode 3010
-        versionName "3.0.1"
+        versionCode 3101
+        versionName "3.1.0"
     }
     buildTypes {
         release {
