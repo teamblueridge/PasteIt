@@ -2,15 +2,15 @@
 <resources>
 
     <!--General; DO NOT TRANSLATE-->
-    <string name="app_name" translatable="no">Paste It</string>
-    <string name="version_name" translatable="no">3.0.1</string>
-    <string name="tbr" translatable="no">Team BlueRidge</string>
+    <string name="app_name" translatable="false">Paste It</string>
+    <string name="version_name" translatable="false">3.0.1</string>
+    <string name="tbr" translatable="false">Team BlueRidge</string>
 
     <!--Main UI-->
     <string name="paste_name">Paste Name</string>
     <string name="paste_content">Paste Content</string>
     <string name="paste_url_label">Paste URL:</string>
-    <string name="paste_url" />
+    <string name="paste_url" translatable="false" />
     <string name="paste_noText">Please fill in the text boxes</string>
     <string name="paste_toast">Paste URL has been copied to the clipboard.</string>
     <string name="paste_upload">Uploading paste. Please wait…</string>
