@@ -43,7 +43,9 @@ public class MainActivity extends Activity {
     String uploadingText;
     String userName;
     String toastText;
+    String pasteApiKey;
     private ProgressDialog pDialog;
+    static final String TEAMBLUERIDGE_APIKEY = "tbrpaste";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,8 +123,8 @@ public class MainActivity extends Activity {
     public void doPaste() {
         // Only paste if at the paste fragment
         if (getFragmentManager().findFragmentByTag("PasteFragment").isVisible()) {
-            EditText pasteNameEditText = (EditText) findViewById(R.id.editText1);
-            EditText pasteContentEditText = (EditText) findViewById(R.id.editText2);
+            EditText pasteNameEditText = (EditText) findViewById(R.id.editTextPasteName);
+            EditText pasteContentEditText = (EditText) findViewById(R.id.editTextPasteContent);
             String pasteContentString = pasteContentEditText.getText().toString();
             if (!pasteContentString.isEmpty()) {
                 new uploadPaste().execute();
@@ -145,10 +147,10 @@ public class MainActivity extends Activity {
 
     class uploadPaste extends AsyncTask<String, String, String> {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-        TextView pasteUrlLabel = (TextView) findViewById(R.id.textView4);
-        EditText pasteNameEditText = (EditText) findViewById(R.id.editText1);
+        TextView pasteUrlLabel = (TextView) findViewById(R.id.pasteUrlLabel);
+        EditText pasteNameEditText = (EditText) findViewById(R.id.editTextPasteName);
         String pasteNameString = pasteNameEditText.getText().toString();
-        EditText pasteContentEditText = (EditText) findViewById(R.id.editText2);
+        EditText pasteContentEditText = (EditText) findViewById(R.id.editTextPasteContent);
         String pasteContentString = pasteContentEditText.getText().toString();
 
         //Let the user know that something is happening.
@@ -173,10 +175,16 @@ public class MainActivity extends Activity {
                 pasteDomain = "https://paste.teamblueridge.org";
             }
             // Only set the API key for Team BlueRidge
-            if (pasteDomain.equals("https://paste.teamblueridge.org")) {
-                uploadUrl = pasteDomain + "/api/create?apikey=tbrpaste";
-            } else {
-                uploadUrl = pasteDomain + "/api/create";
+            if (pasteDomain.equals("https://paste.teamblueridge.org")){
+                uploadUrl = pasteDomain + "/api/create?apikey=" + TEAMBLUERIDGE_APIKEY;
+            }
+            else {
+                if (!prefs.getString("pref_api_key", "").isEmpty()) {
+                    pasteApiKey = prefs.getString("pref_api_key", "");
+                    uploadUrl = pasteDomain + "/api/create?apikey=" + pasteApiKey;
+                } else {
+                    uploadUrl = pasteDomain + "/api/create";
+                }
             }
             if (!prefs.getString("pref_name", "").isEmpty()) {
                 userName = prefs.getString("pref_name", "");

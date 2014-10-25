@@ -15,6 +15,12 @@
             android:summary="@string/pref_domain_summary"
             android:defaultValue="https://paste.teamblueridge.org"
             android:inputType="textUri"/>
+        <EditTextPreference
+            android:key="@string/pref_api_key"
+            android:title="@string/pref_api_key"
+            android:summary="@string/pref_api_key_summary"
+            android:defaultValue=""
+            android:inputType="text"/>
     </PreferenceCategory>
 
     <PreferenceCategory
