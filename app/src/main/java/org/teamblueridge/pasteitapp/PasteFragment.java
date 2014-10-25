@@ -1,4 +1,4 @@
-package org.teamblueridge.pasteit;
+package org.teamblueridge.pasteitapp;
 
 import android.app.Fragment;
 import android.os.Bundle;

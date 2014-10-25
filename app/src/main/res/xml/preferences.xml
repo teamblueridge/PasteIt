@@ -16,9 +16,9 @@
             android:defaultValue="https://paste.teamblueridge.org"
             android:inputType="textUri"/>
         <EditTextPreference
-            android:key="@string/pref_api_key"
+            android:key="pref_api_key"
             android:title="@string/pref_api_key"
-            android:summary="@string/pref_api_key_summary"
+            android:summary=""
             android:defaultValue=""
             android:inputType="text"/>
     </PreferenceCategory>

@@ -1,4 +1,4 @@
-package org.teamblueridge.pasteit;
+package org.teamblueridge.pasteitapp;
 
 import android.app.Activity;
 import android.app.FragmentManager;
@@ -10,6 +10,8 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
@@ -21,7 +23,6 @@ import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -35,7 +36,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity {
+public class MainActivity extends ActionBarActivity {
 
     String pasteUrlString;
     String pasteDomain;
@@ -45,12 +46,16 @@ public class MainActivity extends Activity {
     String toastText;
     String pasteApiKey;
     private ProgressDialog pDialog;
-    static final String TEAMBLUERIDGE_APIKEY = "tbrpaste";
+    static final String TEAMBLUERIDGE_APIKEY = "teamblueridgepaste";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+        }
         // Set-up the paste fragment and give it a name so we can track it
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
@@ -64,11 +69,11 @@ public class MainActivity extends Activity {
             public void onBackStackChanged() {
                 int stackHeight = getFragmentManager().getBackStackEntryCount();
                 if (stackHeight > 0) { // if we have something on the stack (doesn't include the current shown fragment)
-                    getActionBar().setHomeButtonEnabled(true);
-                    getActionBar().setDisplayHomeAsUpEnabled(true);
+                    getSupportActionBar().setHomeButtonEnabled(true);
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 } else {
-                    getActionBar().setDisplayHomeAsUpEnabled(false);
-                    getActionBar().setHomeButtonEnabled(false);
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                    getSupportActionBar().setHomeButtonEnabled(false);
                 }
             }
 
@@ -106,10 +111,11 @@ public class MainActivity extends Activity {
     // Switch to the settings fragment
     public void openSettings() {
         // Only open settings if it's not already open
+        // If there is a null pointer exception, then it's not open
+        // TODO: make this cleaner
         try {
-            if (!getFragmentManager().findFragmentByTag("SettingsFragment").isVisible()) {
-
-            }
+            //noinspection StatementWithEmptyBody
+            if (!getFragmentManager().findFragmentByTag("SettingsFragment").isVisible()) {}
         } catch (NullPointerException e) {
             getFragmentManager().beginTransaction()
                     .replace(R.id.container, new SettingsFragment(), "SettingsFragment")
@@ -141,9 +147,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void setActionBarTitle(String title){
-        getActionBar().setTitle(title);
-    }
+    public void setActionBarTitle(String title){ getSupportActionBar().setTitle(title); }
 
     class uploadPaste extends AsyncTask<String, String, String> {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
@@ -194,7 +198,7 @@ public class MainActivity extends Activity {
             HttpPost httppost = new HttpPost(uploadUrl);
             try {
                 // HTTP Header data
-                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+                List<NameValuePair> nameValuePairs = new ArrayList<>(2);
                 nameValuePairs.add(new BasicNameValuePair("title", pasteNameString));
                 nameValuePairs.add(new BasicNameValuePair("text", pasteContentString));
                 nameValuePairs.add(new BasicNameValuePair("name", userName));
@@ -209,10 +213,8 @@ public class MainActivity extends Activity {
                 while ((line = bfrd.readLine()) != null)
                     stringbuilder.append(line);
                 pasteUrlString = stringbuilder.toString();
-            } catch (ClientProtocolException e) {
-                Log.d("TeamBlueridge", e.toString());
             } catch (IOException e) {
-                Log.d("TeamBlueridge", e.toString());
+                Log.d("TeamBlueRidge", e.toString());
             }
             return null;
         }
