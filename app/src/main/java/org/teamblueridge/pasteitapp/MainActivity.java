@@ -1,12 +1,13 @@
 package org.teamblueridge.pasteitapp;
 
-import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -30,6 +31,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -45,7 +47,11 @@ public class MainActivity extends ActionBarActivity {
     String userName;
     String toastText;
     String pasteApiKey;
-    private ProgressDialog pDialog;
+    String fileContents;
+    Intent receivedIntent;
+    String receivedAction;
+    ProgressDialog pDialogFileLoad;
+    private ProgressDialog pDialogUpload;
     static final String TEAMBLUERIDGE_APIKEY = "teamblueridgepaste";
 
     @Override
@@ -63,6 +69,7 @@ public class MainActivity extends ActionBarActivity {
                     .commit();
         }
 
+
         // Set-up up navigation
         getFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
@@ -78,6 +85,32 @@ public class MainActivity extends ActionBarActivity {
             }
 
         });
+    }
+
+    public void onStart() {
+        super.onStart();
+        receivedIntent = getIntent();
+        receivedAction = receivedIntent.getAction();
+        EditText pasteContentEditText = (EditText) findViewById(R.id.editTextPasteContent);
+        if (receivedAction.equals(Intent.ACTION_VIEW) || receivedAction.equals(Intent.ACTION_EDIT)) {
+            String receivingText = getResources().getString(R.string.file_load);
+            pDialogFileLoad = new ProgressDialog(MainActivity.this);
+            pDialogFileLoad.setMessage(receivingText);
+            pDialogFileLoad.setIndeterminate(true);
+            pDialogFileLoad.setCancelable(false);
+            pDialogFileLoad.show();
+            new LoadFile().execute();
+            if (pDialogFileLoad.isShowing()) {
+                pDialogFileLoad.dismiss();
+            }
+            receivedAction = Intent.ACTION_DEFAULT;
+        } else {
+            String receivedText = receivedIntent.getStringExtra(Intent.EXTRA_TEXT);
+            if (receivedText != null) {
+                pasteContentEditText.setText(receivedText);
+            }
+        }
+
     }
 
     @Override
@@ -149,6 +182,45 @@ public class MainActivity extends ActionBarActivity {
 
     public void setActionBarTitle(String title){ getSupportActionBar().setTitle(title); }
 
+    class LoadFile extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        protected String doInBackground(String... args) {
+            try {
+                receivedAction = getIntent().getAction();
+                Uri receivedText = receivedIntent.getData();
+                InputStream inputStream = getContentResolver().openInputStream(receivedText);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(
+                        inputStream));
+                StringBuilder stringBuilder = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    stringBuilder.append(line);
+                }
+                inputStream.close();
+                fileContents = stringBuilder.toString();
+            } catch (IOException e) {
+                Log.d("TeamBlueRidge", e.toString());
+
+            }
+            return fileContents;
+        }
+
+        protected void onPostExecute(String file) {
+            fileContents = file;
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    //Create a clickable link from pasteUrlString for user (opens in web browser)
+                    EditText pasteContentEditText = (EditText) findViewById(R.id.editTextPasteContent);
+                    pasteContentEditText.setText(fileContents);
+                }
+            });
+        }
+    }
+
     class uploadPaste extends AsyncTask<String, String, String> {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
         TextView pasteUrlLabel = (TextView) findViewById(R.id.pasteUrlLabel);
@@ -162,11 +234,11 @@ public class MainActivity extends ActionBarActivity {
         protected void onPreExecute() {
             uploadingText = getResources().getString(R.string.paste_upload);
             super.onPreExecute();
-            pDialog = new ProgressDialog(MainActivity.this);
-            pDialog.setMessage(uploadingText);
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
-            pDialog.show();
+            pDialogUpload = new ProgressDialog(MainActivity.this);
+            pDialogUpload.setMessage(uploadingText);
+            pDialogUpload.setIndeterminate(false);
+            pDialogUpload.setCancelable(false);
+            pDialogUpload.show();
         }
 
         // post the content in the background while showing the dialog
@@ -222,7 +294,7 @@ public class MainActivity extends ActionBarActivity {
         //Since we used a dialog, we need to disable it
         protected void onPostExecute(String paste_url) {
             //Dismiss the dialog after getting all products
-            pDialog.dismiss();
+            pDialogUpload.dismiss();
             //Copy pasteUrl to clipboard
             ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
             ClipData clip = ClipData.newPlainText("PasteIt", pasteUrlString);

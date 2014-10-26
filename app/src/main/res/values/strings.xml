@@ -10,10 +10,10 @@
     <string name="paste_name">Paste Name</string>
     <string name="paste_content">Paste Content</string>
     <string name="paste_url_label">Paste URL</string>
-    <string name="paste_url" translatable="false" />
     <string name="paste_no_text">Please fill in the text boxes</string>
     <string name="paste_toast">Paste URL has been copied to the clipboard.</string>
     <string name="paste_upload">Uploading paste. Please wait…</string>
+    <string name="file_load">Loading file…</string>
 
     <!--Preferences-->
     <string name="pref_general">General</string>
