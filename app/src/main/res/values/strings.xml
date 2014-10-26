@@ -24,11 +24,12 @@
     <string name="pref_url">Display URL</string>
     <string name="pref_url_summary">Appears under the content box</string>
     <string name="pref_api_key">API Key</string>
-    <string name="pref_api_key_summary">Current key: %s</string>
-    <string name="pref_api_key_summary_ifempty">API key may be required for some sites</string>
+    <string name="pref_api_key_summary">Current key: %s</string><!--%s is the current API key-->
+    <string name="pref_api_key_summary_ifempty">An API key may be required for some sites</string>
     <string name="pref_about">About</string>
     <string name="pref_version">Version</string>
     <string name="pref_created_by">Created By</string>
+    <string name="pref_powered_by">Powered by Stikked</string>
 
     <!--Menu-->
     <string name="action_paste">Paste!</string>

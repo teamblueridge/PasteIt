@@ -31,7 +31,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -40,6 +39,7 @@ import java.util.List;
 
 public class MainActivity extends ActionBarActivity {
 
+    static final String TEAMBLUERIDGE_APIKEY = "teamblueridgepaste";
     String pasteUrlString;
     String pasteDomain;
     String uploadUrl;
@@ -52,12 +52,12 @@ public class MainActivity extends ActionBarActivity {
     String receivedAction;
     ProgressDialog pDialogFileLoad;
     private ProgressDialog pDialogUpload;
-    static final String TEAMBLUERIDGE_APIKEY = "teamblueridgepaste";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //We're using the toolbar from AppCompat as our actionbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -71,11 +71,14 @@ public class MainActivity extends ActionBarActivity {
 
 
         // Set-up up navigation
-        getFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+        getFragmentManager().addOnBackStackChangedListener(new FragmentManager
+                .OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
                 int stackHeight = getFragmentManager().getBackStackEntryCount();
-                if (stackHeight > 0) { // if we have something on the stack (doesn't include the current shown fragment)
+                /* Check if we have anything on the stack. If we do, we need to have the back button
+                 * display in in the ActionBar */
+                if (stackHeight > 0) {
                     getSupportActionBar().setHomeButtonEnabled(true);
                     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 } else {
@@ -94,6 +97,7 @@ public class MainActivity extends ActionBarActivity {
         EditText pasteContentEditText = (EditText) findViewById(R.id.editTextPasteContent);
         if (receivedAction.equals(Intent.ACTION_VIEW) || receivedAction.equals(Intent.ACTION_EDIT)) {
             String receivingText = getResources().getString(R.string.file_load);
+            //Prepare the dialog for loading a file
             pDialogFileLoad = new ProgressDialog(MainActivity.this);
             pDialogFileLoad.setMessage(receivingText);
             pDialogFileLoad.setIndeterminate(true);
@@ -148,7 +152,8 @@ public class MainActivity extends ActionBarActivity {
         // TODO: make this cleaner
         try {
             //noinspection StatementWithEmptyBody
-            if (!getFragmentManager().findFragmentByTag("SettingsFragment").isVisible()) {}
+            if (!getFragmentManager().findFragmentByTag("SettingsFragment").isVisible()) {
+            }
         } catch (NullPointerException e) {
             getFragmentManager().beginTransaction()
                     .replace(R.id.container, new SettingsFragment(), "SettingsFragment")
@@ -180,8 +185,13 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    public void setActionBarTitle(String title){ getSupportActionBar().setTitle(title); }
+    public void setActionBarTitle(String title) {
+        //Set the title of the action bar
+        //Called from the fragments
+        getSupportActionBar().setTitle(title);
+    }
 
+    //AsyncTask for loading the file into the PasteContent textbox
     class LoadFile extends AsyncTask<String, String, String> {
         @Override
         protected void onPreExecute() {
@@ -214,13 +224,15 @@ public class MainActivity extends ActionBarActivity {
             runOnUiThread(new Runnable() {
                 public void run() {
                     //Create a clickable link from pasteUrlString for user (opens in web browser)
-                    EditText pasteContentEditText = (EditText) findViewById(R.id.editTextPasteContent);
+                    EditText pasteContentEditText;
+                    pasteContentEditText = (EditText) findViewById(R.id.editTextPasteContent);
                     pasteContentEditText.setText(fileContents);
                 }
             });
         }
     }
 
+    //AsyncTask for uploading the paste to the server
     class uploadPaste extends AsyncTask<String, String, String> {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
         TextView pasteUrlLabel = (TextView) findViewById(R.id.pasteUrlLabel);
@@ -229,11 +241,11 @@ public class MainActivity extends ActionBarActivity {
         EditText pasteContentEditText = (EditText) findViewById(R.id.editTextPasteContent);
         String pasteContentString = pasteContentEditText.getText().toString();
 
-        //Let the user know that something is happening.
         @Override
         protected void onPreExecute() {
             uploadingText = getResources().getString(R.string.paste_upload);
             super.onPreExecute();
+            //Prepare the dialog for uploading the paste
             pDialogUpload = new ProgressDialog(MainActivity.this);
             pDialogUpload.setMessage(uploadingText);
             pDialogUpload.setIndeterminate(false);
@@ -250,11 +262,10 @@ public class MainActivity extends ActionBarActivity {
             } else {
                 pasteDomain = "https://paste.teamblueridge.org";
             }
-            // Only set the API key for Team BlueRidge
-            if (pasteDomain.equals("https://paste.teamblueridge.org")){
+            // Only set the API key for Team BlueRidge because we know our key
+            if (pasteDomain.equals("https://paste.teamblueridge.org")) {
                 uploadUrl = pasteDomain + "/api/create?apikey=" + TEAMBLUERIDGE_APIKEY;
-            }
-            else {
+            } else {
                 if (!prefs.getString("pref_api_key", "").isEmpty()) {
                     pasteApiKey = prefs.getString("pref_api_key", "");
                     uploadUrl = pasteDomain + "/api/create?apikey=" + pasteApiKey;
@@ -262,11 +273,13 @@ public class MainActivity extends ActionBarActivity {
                     uploadUrl = pasteDomain + "/api/create";
                 }
             }
+            //Ensure username is set, if not, default to "mobile user"
             if (!prefs.getString("pref_name", "").isEmpty()) {
                 userName = prefs.getString("pref_name", "");
             } else {
                 userName = "Mobile User";
             }
+            //Get ready to actually send everything to the server
             HttpPost httppost = new HttpPost(uploadUrl);
             try {
                 // HTTP Header data

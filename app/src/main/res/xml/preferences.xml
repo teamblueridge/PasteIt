@@ -25,7 +25,7 @@
 
     <PreferenceCategory
         android:title="@string/pref_about" >
-        <Preference android:title="Powered by Stikked">
+        <Preference android:title="@string/pref_powered_by">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="https://github.com/claudehohl/Stikked"
