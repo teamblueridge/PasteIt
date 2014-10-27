@@ -15,9 +15,8 @@ public class SettingsFragment extends PreferenceFragment
         super.onCreate(savedInstanceState);
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences);
-        ((MainActivity) getActivity()).setActionBarTitle("Settings");
         updateApiPreferenceSummary("pref_api_key");
-    }
+}
 
     @Override
     public void onResume() {
@@ -42,19 +41,19 @@ public class SettingsFragment extends PreferenceFragment
             case "pref_api_key":
                 //Update the summary to show the new value
                 updateApiPreferenceSummary(key);
-                return;
+                break;
             case "pref_domain":
                 //Reset the API key, because it may vary by domain and then reload the preferences
                 findPreference("pref_api_key").getEditor().putString("pref_api_key", "").commit();
                 setPreferenceScreen(null);
                 addPreferencesFromResource(R.xml.preferences);
                 updateApiPreferenceSummary("pref_api_key");
-                return;
+                break;
             case "pref_name":
                 //We don't do anything special for changing the name, but it's nice to have it here
-                return;
+                break;
             default:
-                return;
+                break;
         }
     }
 

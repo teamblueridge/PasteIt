@@ -12,29 +12,28 @@
     tools:context=".PasteFragment">
 
 
-        <EditText
-            android:id="@+id/editTextPasteName"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:ems="10"
-            android:inputType="textCapWords"
-            android:hint="@string/paste_name">
-            <requestFocus />
-        </EditText>
-
-        <EditText
-            android:id="@+id/editTextPasteContent"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:ems="10"
-            android:inputType="textNoSuggestions|textMultiLine|textLongMessage"
-            android:gravity="top"
-            android:hint="@string/paste_content"
-            android:layout_weight="1"/>
-        <TextView
-            android:id="@+id/pasteUrlLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/paste_url_label"
-            android:textStyle="bold"/>
+    <EditText
+        android:id="@+id/editTextPasteName"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:ems="10"
+        android:inputType="textCapWords"
+        android:hint="@string/paste_name">
+        <requestFocus />
+    </EditText>
+    <EditText
+        android:id="@+id/editTextPasteContent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:ems="10"
+        android:inputType="textNoSuggestions|textMultiLine|textLongMessage"
+        android:gravity="top"
+        android:hint="@string/paste_content"
+        android:layout_weight="1"/>
+    <TextView
+        android:id="@+id/pasteUrlLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/paste_url_label"
+        android:textStyle="bold"/>
 </LinearLayout>

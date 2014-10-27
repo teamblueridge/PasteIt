@@ -26,6 +26,11 @@
                 <data android:mimeType="application/xml"/>
             </intent-filter>
         </activity>
+        <activity android:name=".SettingsActivity"
+            android:parentActivityName=".MainActivity"
+            android:label="@string/action_settings">
+
+        </activity>
     </application>
 
 </manifest>

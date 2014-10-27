@@ -135,7 +135,8 @@ public class MainActivity extends ActionBarActivity {
                 doPaste();
                 return true;
             case R.id.action_settings:
-                openSettings();
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
                 return true;
             case android.R.id.home:
                 getFragmentManager().popBackStack();
@@ -143,24 +144,6 @@ public class MainActivity extends ActionBarActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    // Switch to the settings fragment
-    public void openSettings() {
-        // Only open settings if it's not already open
-        // If there is a null pointer exception, then it's not open
-        // TODO: make this cleaner
-        try {
-            //noinspection StatementWithEmptyBody
-            if (!getFragmentManager().findFragmentByTag("SettingsFragment").isVisible()) {
-            }
-        } catch (NullPointerException e) {
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.container, new SettingsFragment(), "SettingsFragment")
-                    .addToBackStack("SettingsFragment")
-                    .commit();
-        }
-
     }
 
     // Start pasting
