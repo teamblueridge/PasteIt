@@ -16,7 +16,7 @@ public class SettingsFragment extends PreferenceFragment
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences);
         updateApiPreferenceSummary("pref_api_key");
-}
+    }
 
     @Override
     public void onResume() {
@@ -37,6 +37,7 @@ public class SettingsFragment extends PreferenceFragment
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         //Run a check to see which preference was changed and act on it
+        ApiHandler apiHandler = new ApiHandler();
         switch (key) {
             case "pref_api_key":
                 //Update the summary to show the new value
@@ -48,6 +49,7 @@ public class SettingsFragment extends PreferenceFragment
                 setPreferenceScreen(null);
                 addPreferencesFromResource(R.xml.preferences);
                 updateApiPreferenceSummary("pref_api_key");
+                apiHandler.getLanguagesAvailable(sharedPreferences, getActivity());
                 break;
             case "pref_name":
                 //We don't do anything special for changing the name, but it's nice to have it here
@@ -57,6 +59,12 @@ public class SettingsFragment extends PreferenceFragment
         }
     }
 
+    /**
+     * Updates the summary for the API key preference. Called from both the "pref_api_key" and
+     * "pref_domain" cases in onSharedPreferenceChanged();
+     *
+     * @param key : The API key that the summary should be updated to
+     */
     public void updateApiPreferenceSummary(String key) {
         //Update the API key summary, called in 3 places
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -68,4 +76,5 @@ public class SettingsFragment extends PreferenceFragment
         }
 
     }
+
 }

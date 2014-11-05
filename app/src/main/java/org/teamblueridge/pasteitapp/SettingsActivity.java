@@ -14,6 +14,17 @@ public class SettingsActivity extends ActionBarActivity {
             setSupportActionBar(toolbar);
         }
 
+        SysBarTintManager.setupTranslucency(this, true, false);
+
+        SysBarTintManager mTintManager = new SysBarTintManager(this);
+        mTintManager.setStatusBarTintEnabled(true);
+        mTintManager.setActionBarTintEnabled(true);
+        mTintManager.setTintColor(getResources().getColor(R.color.blue_700));
+
+        // Set-up up navigation
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         // Display the fragment as the main content.
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
@@ -22,9 +33,6 @@ public class SettingsActivity extends ActionBarActivity {
                     .commit();
         }
 
-        // Set-up up navigation
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-     }
+    }
 
 }

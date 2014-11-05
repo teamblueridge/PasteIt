@@ -11,9 +11,8 @@
     android:orientation="vertical"
     tools:context=".PasteFragment">
 
-
     <EditText
-        android:id="@+id/editTextPasteName"
+        android:id="@+id/paste_name_edittext"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:ems="10"
@@ -21,8 +20,12 @@
         android:hint="@string/paste_name">
         <requestFocus />
     </EditText>
+    <Spinner
+        android:id="@+id/language_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"/>
     <EditText
-        android:id="@+id/editTextPasteContent"
+        android:id="@+id/paste_content_edittext"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:ems="10"
@@ -31,7 +34,7 @@
         android:hint="@string/paste_content"
         android:layout_weight="1"/>
     <TextView
-        android:id="@+id/pasteUrlLabel"
+        android:id="@+id/paste_url_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/paste_url_label"
