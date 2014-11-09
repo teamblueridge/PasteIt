@@ -15,10 +15,13 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.JsonReader;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,25 +34,25 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class MainActivity extends ActionBarActivity {
 
-    static final String TEAMBLUERIDGE_APIKEY = "teamblueridgepaste";
-    String pasteUrlString;
-    String pasteDomain;
-    String uploadUrl;
-    String uploadingText;
-    String userName;
-    String toastText;
-    String pasteApiKey;
-    String fileContents;
-    Intent receivedIntent;
-    String receivedAction;
+    String mPasteUrlString;
+    String mUploadUrl;
+    String mUploadingText;
+    String mUserName;
+    String mToastText;
+    String mFileContents;
+    Intent mReceivedIntent;
+    String mReceivedAction;
     ProgressDialog pDialogFileLoad;
     private ProgressDialog pDialogUpload;
 
@@ -62,13 +65,13 @@ public class MainActivity extends ActionBarActivity {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
+
         // Set-up the paste fragment and give it a name so we can track it
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
                     .add(R.id.container, new PasteFragment(), "PasteFragment")
                     .commit();
         }
-
 
         // Set-up up navigation
         getFragmentManager().addOnBackStackChangedListener(new FragmentManager
@@ -88,14 +91,22 @@ public class MainActivity extends ActionBarActivity {
             }
 
         });
+
+        // Set up the status bar tint using the carbonrom SysBarTintManager
+        SysBarTintManager.setupTranslucency(this, true, false);
+
+        SysBarTintManager mTintManager = new SysBarTintManager(this);
+        mTintManager.setStatusBarTintEnabled(true);
+        mTintManager.setActionBarTintEnabled(true);
+        mTintManager.setTintColor(getResources().getColor(R.color.blue_700));
     }
 
     public void onStart() {
         super.onStart();
-        receivedIntent = getIntent();
-        receivedAction = receivedIntent.getAction();
-        EditText pasteContentEditText = (EditText) findViewById(R.id.editTextPasteContent);
-        if (receivedAction.equals(Intent.ACTION_VIEW) || receivedAction.equals(Intent.ACTION_EDIT)) {
+        mReceivedIntent = getIntent();
+        mReceivedAction = mReceivedIntent.getAction();
+        EditText pasteContentEditText = (EditText) findViewById(R.id.paste_content_edittext);
+        if (mReceivedAction.equals(Intent.ACTION_VIEW) || mReceivedAction.equals(Intent.ACTION_EDIT)) {
             String receivingText = getResources().getString(R.string.file_load);
             //Prepare the dialog for loading a file
             pDialogFileLoad = new ProgressDialog(MainActivity.this);
@@ -107,14 +118,27 @@ public class MainActivity extends ActionBarActivity {
             if (pDialogFileLoad.isShowing()) {
                 pDialogFileLoad.dismiss();
             }
-            receivedAction = Intent.ACTION_DEFAULT;
+            mReceivedAction = Intent.ACTION_DEFAULT;
         } else {
-            String receivedText = receivedIntent.getStringExtra(Intent.EXTRA_TEXT);
+            String receivedText = mReceivedIntent.getStringExtra(Intent.EXTRA_TEXT);
             if (receivedText != null) {
                 pasteContentEditText.setText(receivedText);
             }
         }
 
+        // Check if the "languages" file exists
+        File file = getBaseContext().getFileStreamPath("languages");
+        Log.d("TeamBlueRidge", "Checking if file exists");
+        if (file.exists()) {
+            Log.d("TeamBlueRidge", "File exists. Calling PopulateSpinner ASyncTask");
+            new PopulateSpinner().execute();
+        } else {
+            Log.d("TeamBlueRidge", "File does not exist");
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+            ApiHandler apiHandler = new ApiHandler();
+            apiHandler.getLanguagesAvailable(prefs, this);
+            new PopulateSpinner().execute();
+        }
     }
 
     @Override
@@ -146,45 +170,80 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    // Start pasting
+    /**
+     * Does some preparation before finally calling the UploadPaste ASyncTask
+     */
     public void doPaste() {
-        // Only paste if at the paste fragment
-        if (getFragmentManager().findFragmentByTag("PasteFragment").isVisible()) {
-            EditText pasteNameEditText = (EditText) findViewById(R.id.editTextPasteName);
-            EditText pasteContentEditText = (EditText) findViewById(R.id.editTextPasteContent);
+        try {
+            EditText pasteNameEditText = (EditText) findViewById(R.id.paste_name_edittext);
+            EditText pasteContentEditText = (EditText) findViewById(R.id.paste_content_edittext);
             String pasteContentString = pasteContentEditText.getText().toString();
+            Spinner languageSpinner = (Spinner) findViewById(R.id.language_spinner);
+            Integer languageSelected = languageSpinner.getSelectedItemPosition();
+            FileInputStream fis;
+            ArrayList<String> langListUgly = new ArrayList<>();
+            fis = getApplicationContext().openFileInput("languages");
+            JsonReader reader = new JsonReader(new InputStreamReader(fis, "UTF-8"));
+            reader.beginObject();
+            while (reader.hasNext()) {
+                langListUgly.add(reader.nextName());
+                reader.nextString();
+            }
+            reader.endObject();
+            String[] languageListStringArray = langListUgly
+                    .toArray(new String[langListUgly.size()]);
+            String language = languageListStringArray[languageSelected];
             if (!pasteContentString.isEmpty()) {
-                new uploadPaste().execute();
-                toastText = getResources().getString(R.string.paste_toast);
-                pasteNameEditText.setText("");
-                pasteContentEditText.setText("");
+                if (NetworkUtil.isConnectedToNetwork(this)) {
+                    if (!language.equals("0")) {
+                        new UploadPaste().execute(language);
+                        mToastText = getResources().getString(R.string.paste_toast);
+                        pasteNameEditText.setText("");
+                        pasteContentEditText.setText("");
+                    } else {
+                        mToastText = getResources().getString(R.string.invalid_language);
+                    }
+                } else {
+                    mToastText = getResources().getString(R.string.no_network);
+                }
             } else {
-                toastText = getResources().getString(R.string.paste_no_text);
+                mToastText = getResources().getString(R.string.paste_no_text);
             }
             Context context = getApplicationContext();
-            CharSequence text = toastText;
+            CharSequence text = mToastText;
             int duration = Toast.LENGTH_SHORT;
             Toast.makeText(context, text, duration).show();
+
+        } catch (IOException e) {
+            Log.d("TeamBlueRidge", e.toString());
         }
+
     }
 
+    /**
+     * Sets the title of the ActionBar to be whatever is specified. Called from the various
+     * fragments and other activities
+     *
+     * @param title The title to be used for the ActionBar
+     */
     public void setActionBarTitle(String title) {
         //Set the title of the action bar
         //Called from the fragments
         getSupportActionBar().setTitle(title);
     }
 
-    //AsyncTask for loading the file into the PasteContent textbox
+    /**
+     * AsyncTask for loading the file, from an intent, into the paste content edittext</p>
+     * <p/>
+     * doInBackground : get the file's contents loaded</p>
+     * onPostExecute : update the edittext's content</p>
+     */
     class LoadFile extends AsyncTask<String, String, String> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
 
         protected String doInBackground(String... args) {
             try {
-                receivedAction = getIntent().getAction();
-                Uri receivedText = receivedIntent.getData();
+                mReceivedAction = getIntent().getAction();
+                Uri receivedText = mReceivedIntent.getData();
                 InputStream inputStream = getContentResolver().openInputStream(receivedText);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(
                         inputStream));
@@ -194,43 +253,49 @@ public class MainActivity extends ActionBarActivity {
                     stringBuilder.append(line);
                 }
                 inputStream.close();
-                fileContents = stringBuilder.toString();
+                mFileContents = stringBuilder.toString();
             } catch (IOException e) {
                 Log.d("TeamBlueRidge", e.toString());
 
             }
-            return fileContents;
+            return mFileContents;
         }
 
         protected void onPostExecute(String file) {
-            fileContents = file;
+            mFileContents = file;
             runOnUiThread(new Runnable() {
                 public void run() {
                     //Create a clickable link from pasteUrlString for user (opens in web browser)
                     EditText pasteContentEditText;
-                    pasteContentEditText = (EditText) findViewById(R.id.editTextPasteContent);
-                    pasteContentEditText.setText(fileContents);
+                    pasteContentEditText = (EditText) findViewById(R.id.paste_content_edittext);
+                    pasteContentEditText.setText(mFileContents);
                 }
             });
         }
     }
 
-    //AsyncTask for uploading the paste to the server
-    class uploadPaste extends AsyncTask<String, String, String> {
+    /**
+     * ASyncTask that uploads the paste to the selected server</p>
+     * <p/>
+     * onPreExecute : Setup the upload dialog</p>
+     * doInBackground : Perform the upload operation with an HttpClient</p>
+     * onPostExecute : Close the dialog box and update the paste url label</p>
+     */
+    class UploadPaste extends AsyncTask<String, String, String> {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-        TextView pasteUrlLabel = (TextView) findViewById(R.id.pasteUrlLabel);
-        EditText pasteNameEditText = (EditText) findViewById(R.id.editTextPasteName);
+        TextView pasteUrlLabel = (TextView) findViewById(R.id.paste_url_label);
+        EditText pasteNameEditText = (EditText) findViewById(R.id.paste_name_edittext);
         String pasteNameString = pasteNameEditText.getText().toString();
-        EditText pasteContentEditText = (EditText) findViewById(R.id.editTextPasteContent);
+        EditText pasteContentEditText = (EditText) findViewById(R.id.paste_content_edittext);
         String pasteContentString = pasteContentEditText.getText().toString();
 
         @Override
         protected void onPreExecute() {
-            uploadingText = getResources().getString(R.string.paste_upload);
+            mUploadingText = getResources().getString(R.string.paste_upload);
             super.onPreExecute();
             //Prepare the dialog for uploading the paste
             pDialogUpload = new ProgressDialog(MainActivity.this);
-            pDialogUpload.setMessage(uploadingText);
+            pDialogUpload.setMessage(mUploadingText);
             pDialogUpload.setIndeterminate(false);
             pDialogUpload.setCancelable(false);
             pDialogUpload.show();
@@ -238,38 +303,26 @@ public class MainActivity extends ActionBarActivity {
 
         // post the content in the background while showing the dialog
         protected String doInBackground(String... args) {
-            HttpClient httpclient = new DefaultHttpClient();
-            // Ensure that the paste URL is set, if not, default to Team BlueRidge
-            if (!prefs.getString("pref_domain", "").isEmpty()) {
-                pasteDomain = prefs.getString("pref_domain", "");
-            } else {
-                pasteDomain = "https://paste.teamblueridge.org";
-            }
-            // Only set the API key for Team BlueRidge because we know our key
-            if (pasteDomain.equals("https://paste.teamblueridge.org")) {
-                uploadUrl = pasteDomain + "/api/create?apikey=" + TEAMBLUERIDGE_APIKEY;
-            } else {
-                if (!prefs.getString("pref_api_key", "").isEmpty()) {
-                    pasteApiKey = prefs.getString("pref_api_key", "");
-                    uploadUrl = pasteDomain + "/api/create?apikey=" + pasteApiKey;
-                } else {
-                    uploadUrl = pasteDomain + "/api/create";
-                }
-            }
-            //Ensure username is set, if not, default to "mobile user"
-            if (!prefs.getString("pref_name", "").isEmpty()) {
-                userName = prefs.getString("pref_name", "");
-            } else {
-                userName = "Mobile User";
-            }
-            //Get ready to actually send everything to the server
-            HttpPost httppost = new HttpPost(uploadUrl);
             try {
+                HttpClient httpclient = new DefaultHttpClient();
+                UploadDownloadUrlPrep upDownPrep = new UploadDownloadUrlPrep();
+                mUploadUrl = upDownPrep.prepUrl(prefs, "upCreate");
+                String language = args[0];
+
+                //Ensure username is set, if not, default to "mobile user"
+                if (!prefs.getString("pref_name", "").isEmpty()) {
+                    mUserName = prefs.getString("pref_name", "");
+                } else {
+                    mUserName = "Mobile User";
+                }
+                //Get ready to actually send everything to the server
+                HttpPost httppost = new HttpPost(mUploadUrl);
                 // HTTP Header data
                 List<NameValuePair> nameValuePairs = new ArrayList<>(2);
                 nameValuePairs.add(new BasicNameValuePair("title", pasteNameString));
                 nameValuePairs.add(new BasicNameValuePair("text", pasteContentString));
-                nameValuePairs.add(new BasicNameValuePair("name", userName));
+                nameValuePairs.add(new BasicNameValuePair("name", mUserName));
+                nameValuePairs.add(new BasicNameValuePair("lang", language));
                 httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
                 // Execute HTTP Post Request
@@ -280,7 +333,7 @@ public class MainActivity extends ActionBarActivity {
                 String line;
                 while ((line = bfrd.readLine()) != null)
                     stringbuilder.append(line);
-                pasteUrlString = stringbuilder.toString();
+                mPasteUrlString = stringbuilder.toString();
             } catch (IOException e) {
                 Log.d("TeamBlueRidge", e.toString());
             }
@@ -293,18 +346,75 @@ public class MainActivity extends ActionBarActivity {
             pDialogUpload.dismiss();
             //Copy pasteUrl to clipboard
             ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText("PasteIt", pasteUrlString);
+            ClipData clip = ClipData.newPlainText("PasteIt", mPasteUrlString);
             clipboard.setPrimaryClip(clip);
 
             //Display paste URL if allowed in preferences
             runOnUiThread(new Runnable() {
                 public void run() {
                     //Create a clickable link from pasteUrlString for user (opens in web browser)
-                    String linkText = "<a href=\"" + pasteUrlString + "\">" + pasteUrlString + "</a>";
+                    String linkText = "<a href=\"" + mPasteUrlString + "\">" + mPasteUrlString + "</a>";
                     pasteUrlLabel.setText(Html.fromHtml(linkText));
                     pasteUrlLabel.setMovementMethod(LinkMovementMethod.getInstance());
                 }
             });
+        }
+    }
+
+    /**
+     * Puts the languages from JSON grabbed via the Stikked API into the Spinner</p>
+     * <p/>
+     * doInBackground : Read from JSON file, turn JSON into an array of objects and an array of
+     * keys.</p>
+     * onPostExecute : Populate the spinner with the Array from JSON</p>
+     */
+    class PopulateSpinner extends AsyncTask<String, String, ArrayList> {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+
+        @Override
+        protected ArrayList doInBackground(String... params) {
+            Log.d("TeamBlueRidge", "Loading JSON file");
+            //Read the JSON file from internal storage
+            FileInputStream fis;
+            try {
+                ArrayList<String> langListPretty = new ArrayList<>();
+                fis = getApplicationContext().openFileInput("languages");
+                JsonReader reader = new JsonReader(new InputStreamReader(fis, "UTF-8"));
+                reader.beginObject();
+                while (reader.hasNext()) {
+                    reader.nextName();
+                    langListPretty.add(reader.nextString());
+                }
+                reader.endObject();
+                return langListPretty;
+            } catch (IOException e) {
+                Log.d("TeamBlueRidge", e.toString());
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(final ArrayList langListPretty) {
+            //Populate spinner
+            super.onPostExecute(langListPretty);
+            runOnUiThread(new Runnable() {
+                public void run() {
+
+                    try {
+                        Spinner spinner = (Spinner) findViewById(R.id.language_spinner);
+                        ArrayAdapter<String> adapter =
+                                new ArrayAdapter<String>(getApplicationContext(),
+                                        R.layout.spinner_item, langListPretty);
+                        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+                        spinner.setAdapter(adapter);
+                    } catch (NullPointerException e) {
+                        prefs.edit().putString("prefs_domain", "https://paste.teamblueridge.org")
+                                .commit();
+                    }
+
+                }
+            });
+
         }
     }
 

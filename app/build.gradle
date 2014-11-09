@@ -2,14 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.0.2"
+    buildToolsVersion "21.1.1"
 
     defaultConfig {
         applicationId "org.teamblueridge.pasteitapp"
         minSdkVersion 16
         targetSdkVersion 21
-        versionCode 4110
-        versionName "4.1.1"
+        versionCode 5000
+        versionName "5.0.0"
     }
     buildTypes {
         release {
