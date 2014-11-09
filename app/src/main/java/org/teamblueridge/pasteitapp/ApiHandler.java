@@ -3,7 +3,6 @@ package org.teamblueridge.pasteitapp;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -20,11 +19,9 @@ public class ApiHandler {
 
         String languageUrl;
         String filename = "languages";
-        Log.d("TeamBlueRidge", "Getting languages...");
 
         UploadDownloadUrlPrep upDownPrep = new UploadDownloadUrlPrep();
         languageUrl = upDownPrep.prepUrl(sharedPreferences, "downLangs");
-        Log.d("TeamBlueRidge", "Have correct URL");
 
         new GetLangs().execute(languageUrl, filename, context);
 
@@ -42,7 +39,6 @@ public class ApiHandler {
             String filename = (String) params[1];
             Context context = (Context) params[2];
             String languageList = NetworkUtil.readFromUrl(languageUrl);
-            Log.d("TeamBlueRidge", "Have list of languages");
             try {
                 FileOutputStream outputStream;
                 outputStream = context.openFileOutput(filename, Context.MODE_PRIVATE);
@@ -51,7 +47,6 @@ public class ApiHandler {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Log.d("TeamBlueRidge", "File written");
             return null;
         }
 

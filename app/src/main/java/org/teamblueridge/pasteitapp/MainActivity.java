@@ -128,12 +128,9 @@ public class MainActivity extends ActionBarActivity {
 
         // Check if the "languages" file exists
         File file = getBaseContext().getFileStreamPath("languages");
-        Log.d("TeamBlueRidge", "Checking if file exists");
         if (file.exists()) {
-            Log.d("TeamBlueRidge", "File exists. Calling PopulateSpinner ASyncTask");
             new PopulateSpinner().execute();
         } else {
-            Log.d("TeamBlueRidge", "File does not exist");
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
             ApiHandler apiHandler = new ApiHandler();
             apiHandler.getLanguagesAvailable(prefs, this);
@@ -373,7 +370,6 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected ArrayList doInBackground(String... params) {
-            Log.d("TeamBlueRidge", "Loading JSON file");
             //Read the JSON file from internal storage
             FileInputStream fis;
             try {
