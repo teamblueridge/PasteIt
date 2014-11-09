@@ -3,7 +3,7 @@
 
     <!--General; DO NOT TRANSLATE-->
     <string name="app_name" translatable="false">Paste It</string>
-    <string name="version_name" translatable="false">5.0.0</string>
+    <string name="version_name" translatable="false">5.1.0</string>
     <string name="tbr" translatable="false">Team BlueRidge</string>
 
     <!--Main UI-->
@@ -28,6 +28,8 @@
     <string name="pref_api_key">API Key</string>
     <string name="pref_api_key_summary">Current key: %s</string><!--%s is the current API key-->
     <string name="pref_api_key_summary_ifempty">An API key may be required for some sites</string>
+    <string name="pref_default_language">Default upload language</string>
+    <string name="pref_default_language_summary">Default language for uploads</string>
     <string name="pref_about">About</string>
     <string name="pref_version">Version</string>
     <string name="pref_created_by">Created By</string>

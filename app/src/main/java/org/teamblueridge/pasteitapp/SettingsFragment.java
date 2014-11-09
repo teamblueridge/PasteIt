@@ -2,6 +2,7 @@ package org.teamblueridge.pasteitapp;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
@@ -16,6 +17,9 @@ public class SettingsFragment extends PreferenceFragment
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences);
         updateApiPreferenceSummary("pref_api_key");
+        ListPreference listPreference = (ListPreference) findPreference("pref_default_language");
+        setListPreferenceData(listPreference);
+        findPreference("pref_default_language").setSummary(listPreference.getEntry());
     }
 
     @Override
@@ -54,9 +58,20 @@ public class SettingsFragment extends PreferenceFragment
             case "pref_name":
                 //We don't do anything special for changing the name, but it's nice to have it here
                 break;
+            case "pref_default_language":
+                ListPreference listPreference = (ListPreference) findPreference(key);
+                findPreference(key).setSummary(listPreference.getEntry());
+                break;
             default:
                 break;
         }
+    }
+
+    protected void setListPreferenceData(ListPreference listPreference) {
+        ApiHandler apiHandler = new ApiHandler();
+        listPreference.setEntries(apiHandler.getLanguageArray(getActivity(), "pretty"));
+        listPreference.setDefaultValue("1");
+        listPreference.setEntryValues(apiHandler.getLanguageArray(getActivity(), "ugly"));
     }
 
     /**

@@ -92,6 +92,7 @@ public class SysBarTintManager {
     private View mNavBarTintView;
     private Drawable mOldActionBarBackground;
     private ActionBar mActionBar;
+
     static {
         // Android allows a system property to override the presence of the navigation bar.
         // Used by the emulator.

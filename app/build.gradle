@@ -8,8 +8,8 @@ android {
         applicationId "org.teamblueridge.pasteitapp"
         minSdkVersion 16
         targetSdkVersion 21
-        versionCode 5000
-        versionName "5.0.0"
+        versionCode 5100
+        versionName "5.1.0"
     }
     buildTypes {
         release {

@@ -15,7 +15,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.JsonReader;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,7 +34,6 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -55,6 +53,7 @@ public class MainActivity extends ActionBarActivity {
     String mReceivedAction;
     ProgressDialog pDialogFileLoad;
     private ProgressDialog pDialogUpload;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,50 +170,36 @@ public class MainActivity extends ActionBarActivity {
      * Does some preparation before finally calling the UploadPaste ASyncTask
      */
     public void doPaste() {
-        try {
-            EditText pasteNameEditText = (EditText) findViewById(R.id.paste_name_edittext);
-            EditText pasteContentEditText = (EditText) findViewById(R.id.paste_content_edittext);
-            String pasteContentString = pasteContentEditText.getText().toString();
-            Spinner languageSpinner = (Spinner) findViewById(R.id.language_spinner);
-            Integer languageSelected = languageSpinner.getSelectedItemPosition();
-            FileInputStream fis;
-            ArrayList<String> langListUgly = new ArrayList<>();
-            fis = getApplicationContext().openFileInput("languages");
-            JsonReader reader = new JsonReader(new InputStreamReader(fis, "UTF-8"));
-            reader.beginObject();
-            while (reader.hasNext()) {
-                langListUgly.add(reader.nextName());
-                reader.nextString();
-            }
-            reader.endObject();
-            String[] languageListStringArray = langListUgly
-                    .toArray(new String[langListUgly.size()]);
-            String language = languageListStringArray[languageSelected];
-            if (!pasteContentString.isEmpty()) {
-                if (NetworkUtil.isConnectedToNetwork(this)) {
-                    if (!language.equals("0")) {
-                        new UploadPaste().execute(language);
-                        mToastText = getResources().getString(R.string.paste_toast);
-                        pasteNameEditText.setText("");
-                        pasteContentEditText.setText("");
-                    } else {
-                        mToastText = getResources().getString(R.string.invalid_language);
-                    }
+        EditText pasteNameEditText = (EditText) findViewById(R.id.paste_name_edittext);
+        EditText pasteContentEditText = (EditText) findViewById(R.id.paste_content_edittext);
+        String pasteContentString = pasteContentEditText.getText().toString();
+        Spinner languageSpinner = (Spinner) findViewById(R.id.language_spinner);
+        Integer languageSelected = languageSpinner.getSelectedItemPosition();
+        ApiHandler apiHandler = new ApiHandler();
+        String[] languageListStringArray =
+                apiHandler.getLanguageArray(getApplicationContext(), "pretty");
+
+        String language = languageListStringArray[languageSelected];
+        if (!pasteContentString.isEmpty()) {
+            if (NetworkUtil.isConnectedToNetwork(this)) {
+                if (!language.equals("0")) {
+                    new UploadPaste().execute(language);
+                    mToastText = getResources().getString(R.string.paste_toast);
+                    pasteNameEditText.setText("");
+                    pasteContentEditText.setText("");
                 } else {
-                    mToastText = getResources().getString(R.string.no_network);
+                    mToastText = getResources().getString(R.string.invalid_language);
                 }
             } else {
-                mToastText = getResources().getString(R.string.paste_no_text);
+                mToastText = getResources().getString(R.string.no_network);
             }
-            Context context = getApplicationContext();
-            CharSequence text = mToastText;
-            int duration = Toast.LENGTH_SHORT;
-            Toast.makeText(context, text, duration).show();
-
-        } catch (IOException e) {
-            Log.d("TeamBlueRidge", e.toString());
+        } else {
+            mToastText = getResources().getString(R.string.paste_no_text);
         }
-
+        Context context = getApplicationContext();
+        CharSequence text = mToastText;
+        int duration = Toast.LENGTH_SHORT;
+        Toast.makeText(context, text, duration).show();
     }
 
     /**
@@ -365,47 +350,36 @@ public class MainActivity extends ActionBarActivity {
      * keys.</p>
      * onPostExecute : Populate the spinner with the Array from JSON</p>
      */
-    class PopulateSpinner extends AsyncTask<String, String, ArrayList> {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+    class PopulateSpinner extends AsyncTask<String, String, String[]> {
+        ApiHandler apiHandler = new ApiHandler();
 
         @Override
-        protected ArrayList doInBackground(String... params) {
+        protected String[] doInBackground(String... params) {
             //Read the JSON file from internal storage
-            FileInputStream fis;
-            try {
-                ArrayList<String> langListPretty = new ArrayList<>();
-                fis = getApplicationContext().openFileInput("languages");
-                JsonReader reader = new JsonReader(new InputStreamReader(fis, "UTF-8"));
-                reader.beginObject();
-                while (reader.hasNext()) {
-                    reader.nextName();
-                    langListPretty.add(reader.nextString());
-                }
-                reader.endObject();
-                return langListPretty;
-            } catch (IOException e) {
-                Log.d("TeamBlueRidge", e.toString());
-            }
-            return null;
+            return apiHandler.getLanguageArray(getApplicationContext(), "pretty");
         }
 
         @Override
-        protected void onPostExecute(final ArrayList langListPretty) {
+        protected void onPostExecute(final String[] langListPretty) {
             //Populate spinner
             super.onPostExecute(langListPretty);
             runOnUiThread(new Runnable() {
                 public void run() {
-
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                    String positionListPref = prefs.getString("pref_default_language", "-1");
+                    ArrayAdapter<String> uglyList = new ArrayAdapter<>
+                            (getApplicationContext(), R.layout.spinner_item, apiHandler
+                                    .getLanguageArray(getApplicationContext(), "ugly"));
                     try {
                         Spinner spinner = (Spinner) findViewById(R.id.language_spinner);
                         ArrayAdapter<String> adapter =
-                                new ArrayAdapter<String>(getApplicationContext(),
+                                new ArrayAdapter<>(getApplicationContext(),
                                         R.layout.spinner_item, langListPretty);
                         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
                         spinner.setAdapter(adapter);
+                        spinner.setSelection(uglyList.getPosition(positionListPref));
                     } catch (NullPointerException e) {
-                        prefs.edit().putString("prefs_domain", "https://paste.teamblueridge.org")
-                                .commit();
+                        Log.e("TeamBlueRidge", e.toString());
                     }
 
                 }

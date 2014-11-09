@@ -21,6 +21,10 @@
             android:summary=""
             android:defaultValue=""
             android:inputType="text"/>
+        <ListPreference
+            android:key="pref_default_language"
+            android:title="@string/pref_default_language"
+            android:summary="@string/pref_default_language_summary"/>
     </PreferenceCategory>
 
     <PreferenceCategory
