@@ -19,9 +19,5 @@
         <item name="android:textColorSecondary">@color/grey_1000w</item>
         <item name="android:textColorTertiary">@color/grey_1000w</item>
     </style>
-<<<<<<< HEAD
 </resources>
-=======
 
-</resources>
->>>>>>> 77894df2689ee2873356d8b8b9a240bfcffd2a3a
