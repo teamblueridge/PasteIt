@@ -270,6 +270,8 @@ public class MainActivity extends ActionBarActivity {
         String pasteNameString = pasteNameEditText.getText().toString();
         EditText pasteContentEditText = (EditText) findViewById(R.id.paste_content_edittext);
         String pasteContentString = pasteContentEditText.getText().toString();
+        final String HTTP_USER_AGENT = "Paste It, an Android app for pasting to Stikked " +
+                "(https://play.google.com/store/apps/details?id=org.teamblueridge.pasteitapp)";
 
         @Override
         protected void onPreExecute() {
@@ -300,13 +302,13 @@ public class MainActivity extends ActionBarActivity {
                 //Get ready to actually send everything to the server
                 HttpPost httppost = new HttpPost(mUploadUrl);
                 // HTTP Header data
+                httppost.setHeader("User-Agent", HTTP_USER_AGENT);
                 List<NameValuePair> nameValuePairs = new ArrayList<>(2);
                 nameValuePairs.add(new BasicNameValuePair("title", pasteNameString));
                 nameValuePairs.add(new BasicNameValuePair("text", pasteContentString));
                 nameValuePairs.add(new BasicNameValuePair("name", mUserName));
                 nameValuePairs.add(new BasicNameValuePair("lang", language));
                 httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
                 // Execute HTTP Post Request
                 HttpResponse response = httpclient.execute(httppost);
                 InputStream in = response.getEntity().getContent();
