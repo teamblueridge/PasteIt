@@ -97,7 +97,7 @@ public class MainActivity extends ActionBarActivity {
         SysBarTintManager mTintManager = new SysBarTintManager(this);
         mTintManager.setStatusBarTintEnabled(true);
         mTintManager.setActionBarTintEnabled(true);
-        mTintManager.setTintColor(getResources().getColor(R.color.blue_700));
+        mTintManager.setStatusBarTintColor(getResources().getColor(R.color.blue_600));
     }
 
     public void onStart() {
