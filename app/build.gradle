@@ -8,12 +8,17 @@ android {
         applicationId "org.teamblueridge.pasteitapp"
         minSdkVersion 16
         targetSdkVersion 21
-        versionCode 5200
-        versionName "5.2.0"
+        /*versonCode syntax: 4 digits
+        Digit 1 - Major version
+        Digit 2 - Minor Version
+        Digit 3 - Patch Version
+        Digit 4 - Beta Build Number */
+        versionCode 5110
+        versionName "5.1.1"
     }
     buildTypes {
         release {
-            runProguard false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
