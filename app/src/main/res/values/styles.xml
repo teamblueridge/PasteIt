@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!--<style name="AppTheme" parent="AppTheme.Base"/>-->
 
     <style name="AppTheme" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">@color/blue_500</item>
-        <item name="colorPrimaryDark">@color/blue_600</item>
+        <item name="colorPrimaryDark">@color/blue_500</item>
         <item name="android:textColorPrimary">@color/grey_1000b</item>
         <item name="android:textColorSecondary">@color/grey_1000b</item>
         <item name="android:textColorTertiary">@color/grey_1000b</item>
@@ -13,11 +13,10 @@
         <item name="windowActionModeOverlay">true</item>
     </style>
     <style name="ActionBarThemeOverlay" parent="">
-        <item name="colorPrimary">#5677fc</item>
-        <item name="colorPrimaryDark">#455ede</item>
+        <item name="colorPrimary">@color/blue_500</item>
+        <item name="colorPrimaryDark">@color/blue_500</item>
         <item name="android:textColorPrimary">@color/grey_1000w</item>
         <item name="android:textColorSecondary">@color/grey_1000w</item>
         <item name="android:textColorTertiary">@color/grey_1000w</item>
     </style>
 </resources>
-

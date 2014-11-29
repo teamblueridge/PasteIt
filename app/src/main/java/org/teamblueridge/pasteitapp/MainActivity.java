@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
@@ -18,6 +19,8 @@ import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -64,7 +67,7 @@ public class MainActivity extends ActionBarActivity {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
-
+        getSupportActionBar().getThemedContext();
         // Set-up the paste fragment and give it a name so we can track it
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
@@ -92,12 +95,20 @@ public class MainActivity extends ActionBarActivity {
         });
 
         // Set up the status bar tint using the carbonrom SysBarTintManager
-        SysBarTintManager.setupTranslucency(this, true, false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
+                & Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            SysBarTintManager.setupTranslucency(this, true, false);
 
-        SysBarTintManager mTintManager = new SysBarTintManager(this);
-        mTintManager.setStatusBarTintEnabled(true);
-        mTintManager.setActionBarTintEnabled(true);
-        mTintManager.setStatusBarTintColor(getResources().getColor(R.color.blue_600));
+            SysBarTintManager mTintManager = new SysBarTintManager(this);
+            mTintManager.setStatusBarTintEnabled(true);
+            mTintManager.setActionBarTintEnabled(true);
+            mTintManager.setStatusBarTintColor(getResources().getColor(R.color.blue_700));
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            Window window = this.getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.setStatusBarColor(this.getResources().getColor(R.color.blue_700));
+        }
     }
 
     public void onStart() {
@@ -270,7 +281,8 @@ public class MainActivity extends ActionBarActivity {
         String pasteNameString = pasteNameEditText.getText().toString();
         EditText pasteContentEditText = (EditText) findViewById(R.id.paste_content_edittext);
         String pasteContentString = pasteContentEditText.getText().toString();
-        final String HTTP_USER_AGENT = "Paste It, an Android app for pasting to Stikked " +
+        final String HTTP_USER_AGENT = "Paste It v" + getString(R.string.version_name) +
+                ", an Android app for pasting to Stikked " +
                 "(https://play.google.com/store/apps/details?id=org.teamblueridge.pasteitapp)";
 
         @Override
