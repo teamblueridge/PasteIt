@@ -21,6 +21,17 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            debuggable true
+            applicationIdSuffix '.debug'
+            versionNameSuffix '-debug'
+        }
+        beta {
+            versionNameSuffix '-beta'
+        }
+        alpha {
+            versionNameSuffix '-alpha'
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7

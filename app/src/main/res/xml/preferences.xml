@@ -42,7 +42,10 @@
                 android:data="https://teamblueridge.org"
                 />
         </Preference>
-        <Preference android:title="@string/pref_version" android:summary="@string/version_name" />
+        <Preference
+            android:key="pref_version"
+            android:title="@string/pref_version"
+            android:summary="" />
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -20,6 +20,7 @@ public class SettingsFragment extends PreferenceFragment
         ListPreference listPreference = (ListPreference) findPreference("pref_default_language");
         setListPreferenceData(listPreference);
         findPreference("pref_default_language").setSummary(listPreference.getEntry());
+        findPreference("pref_version").setSummary(BuildConfig.VERSION_NAME);
     }
 
     @Override
