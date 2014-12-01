@@ -1,20 +1,34 @@
 apply plugin: 'com.android.application'
 
+def increaseVersionCode() {
+    def versionPropsFile = file('version.properties')
+
+    if (versionPropsFile.canRead()) {
+        def Properties versionProps = new Properties()
+
+        versionProps.load(new FileInputStream(versionPropsFile))
+
+        def code = versionProps['VERSION_CODE'].toInteger() + 1
+
+        versionProps['VERSION_CODE'] = code.toString()
+        versionProps.store(versionPropsFile.newWriter(), null)
+        return code
+
+    } else {
+        throw new GradleException("Could not read version.properties!")
+    }
+}
+
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.1"
-
     defaultConfig {
+        useJack true
         applicationId "org.teamblueridge.pasteitapp"
         minSdkVersion 16
         targetSdkVersion 21
-        /*versonCode syntax: 4 digits
-        Digit 1 - Major version
-        Digit 2 - Minor Version
-        Digit 3 - Patch Version
-        Digit 4 - Beta Build Number */
-        versionCode 5110
-        versionName "5.1.1"
+        versionCode increaseVersionCode()
+        versionName "5.1.1." + increaseVersionCode()
     }
     buildTypes {
         release {
@@ -38,7 +52,6 @@ android {
         targetCompatibility JavaVersion.VERSION_1_7
     }
 }
-
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:21.+'
