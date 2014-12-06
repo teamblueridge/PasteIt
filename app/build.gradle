@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-
+def signingProperties = file('../PasteIt.signing.properties')
 def increaseVersionCode() {
     def versionPropsFile = file('version.properties')
 
@@ -22,6 +22,20 @@ def increaseVersionCode() {
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.1"
+    if (signingProperties.canRead()) {
+
+        Properties props = new Properties()
+        props.load(new FileInputStream(file(signingProperties)))
+
+        signingConfigs {
+            release {
+                storeFile file(props['keystore'])
+                storePassword props['keystore.password']
+                keyAlias props['keyAlias']
+                keyPassword props['keyPassword']
+            }
+        }
+    }
     defaultConfig {
         useJack true
         applicationId "org.teamblueridge.pasteitapp"
@@ -34,6 +48,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
         debug {
             debuggable true
@@ -42,9 +57,11 @@ android {
         }
         beta {
             versionNameSuffix '-beta'
+            signingConfig signingConfigs.release
         }
         alpha {
             versionNameSuffix '-alpha'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
