@@ -7,3 +7,4 @@
 *.apk
 PasteIt.signing.properties
 tbrkeystore.jks
+version.properties
