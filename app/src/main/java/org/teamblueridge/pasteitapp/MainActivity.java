@@ -46,6 +46,8 @@ import java.util.List;
 
 public class MainActivity extends ActionBarActivity {
 
+    private static final String TAG = "TeamBlueRidge";
+
     String mPasteUrlString;
     String mUploadUrl;
     String mUploadingText;
@@ -248,7 +250,7 @@ public class MainActivity extends ActionBarActivity {
                 inputStream.close();
                 mFileContents = stringBuilder.toString();
             } catch (IOException e) {
-                Log.d("TeamBlueRidge", e.toString());
+                Log.e(TAG, e.toString());
 
             }
             return mFileContents;
@@ -331,7 +333,7 @@ public class MainActivity extends ActionBarActivity {
                     stringbuilder.append(line);
                 mPasteUrlString = stringbuilder.toString();
             } catch (IOException e) {
-                Log.d("TeamBlueRidge", e.toString());
+                Log.e(TAG, e.toString());
             }
             return null;
         }
@@ -393,7 +395,7 @@ public class MainActivity extends ActionBarActivity {
                         spinner.setAdapter(adapter);
                         spinner.setSelection(uglyList.getPosition(positionListPref));
                     } catch (NullPointerException e) {
-                        Log.e("TeamBlueRidge", e.toString());
+                        Log.e(TAG, e.toString());
                     }
 
                 }

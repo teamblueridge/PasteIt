@@ -14,6 +14,8 @@ import java.util.ArrayList;
 
 public class ApiHandler {
 
+    private static final String TAG = "TeamBlueRidge";
+
     /**
      *
      * @param context Used in order to be able to read the JSON file
@@ -43,12 +45,12 @@ public class ApiHandler {
                 case "ugly":
                     return languageListUglyStringArray;
                 default:
-                    Log.e("TeamBlueRidge", "Unexpected array description");
+                    Log.e(TAG, "Unexpected array description");
                     return null;
             }
 
         } catch (IOException e) {
-            Log.e("TeamBlueRidge", e.toString());
+            Log.e(TAG, e.toString());
             return null;
         }
 
@@ -89,6 +91,7 @@ public class ApiHandler {
                 outputStream.write(languageList.getBytes());
                 outputStream.close();
             } catch (IOException e) {
+                Log.e(TAG,e.toString());
                 e.printStackTrace();
             }
             return null;

@@ -64,8 +64,6 @@ public class NetworkUtil {
                 manifest.append((char) cp);
             }
             is.close();
-        } catch (MalformedURLException e1) {
-            Log.d(TAG, "Failed reading url " + url, e1);
         } catch (IOException e1) {
             Log.d(TAG, "Failed reading url " + url, e1);
         }

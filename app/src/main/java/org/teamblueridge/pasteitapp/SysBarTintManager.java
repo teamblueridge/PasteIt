@@ -501,7 +501,7 @@ public class SysBarTintManager {
             params.gravity = Gravity.BOTTOM;
         } else {
             params = new LayoutParams(mConfig.getNavigationBarWidth(), LayoutParams.MATCH_PARENT);
-            params.gravity = Gravity.RIGHT;
+            params.gravity = Gravity.END;
         }
         mNavBarTintView.setLayoutParams(params);
         mNavBarTintView.setBackgroundColor(DEFAULT_TINT_COLOR);

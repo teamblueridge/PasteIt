@@ -8,6 +8,8 @@ import android.view.Window;
 import android.view.WindowManager;
 
 public class SettingsActivity extends ActionBarActivity {
+    private static final String TAG = "TeamBlueRidge";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

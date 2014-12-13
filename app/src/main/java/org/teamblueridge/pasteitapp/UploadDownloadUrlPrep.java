@@ -9,17 +9,12 @@ import android.util.Log;
  * @author Kyle Laker (kalaker)
  */
 public class UploadDownloadUrlPrep {
-
-    static final String TEAMBLUERIDGE_APIKEY = "teamblueridgepaste";
-    static final String LANGS_WITH_APIKEY = "/api/langs?apikey=";
-    static final String CREATE_WITH_APIKEY = "/api/create?apikey=";
-    static final String RECENT_WITH_APIKEY = "/api/recent?apikey=";
-    String mUrl;
-    String mPasteDomain;
-    String mLangDownloadUrl;
-    String mRecentDownloadUrl;
-    String mUploadUrl;
-    String mPasteApiKey;
+    private static final String TAG = "TeamBlueRidge";
+    private static final String TEAMBLUERIDGE_APIKEY = "teamblueridgepaste";
+    private static final String LANGS_WITH_APIKEY = "/api/langs?apikey=";
+    private static final String CREATE_WITH_APIKEY = "/api/create?apikey=";
+    private static final String RECENT_WITH_APIKEY = "/api/recent?apikey=";
+    private String mUrl;
 
     /**
      * Gets the proper URL for uploading a paste or for downloading a list of recent pastes (JSON)
@@ -34,6 +29,11 @@ public class UploadDownloadUrlPrep {
     public String prepUrl(SharedPreferences prefs, String upDown) {
 
         // Ensure that the paste URL is set, if not, default to Team BlueRidge
+        String mPasteDomain;
+        String mLangDownloadUrl;
+        String mRecentDownloadUrl;
+        String mUploadUrl;
+
         if (!prefs.getString("pref_domain", "").isEmpty()) {
             mPasteDomain = prefs.getString("pref_domain", "");
         } else {
@@ -46,7 +46,7 @@ public class UploadDownloadUrlPrep {
             mRecentDownloadUrl = mPasteDomain + RECENT_WITH_APIKEY + TEAMBLUERIDGE_APIKEY;
         } else {
             if (!prefs.getString("pref_api_key", "").isEmpty()) {
-                mPasteApiKey = prefs.getString("pref_api_key", "");
+                String mPasteApiKey = prefs.getString("pref_api_key", "");
                 mUploadUrl = mPasteDomain + CREATE_WITH_APIKEY + mPasteApiKey;
                 mLangDownloadUrl = mPasteDomain + LANGS_WITH_APIKEY + mPasteApiKey;
                 mRecentDownloadUrl = mPasteDomain + RECENT_WITH_APIKEY + mPasteApiKey;
@@ -67,7 +67,7 @@ public class UploadDownloadUrlPrep {
                 mUrl = mRecentDownloadUrl;
                 break;
             default:
-                Log.e("TeamBlueRidge", "Unknown URL case");
+                Log.e(TAG, "Unknown URL case");
                 break;
         }
 
