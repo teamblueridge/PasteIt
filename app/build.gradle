@@ -21,7 +21,7 @@ def increaseVersionCode() {
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.1.1"
+    buildToolsVersion "21.1.2"
     if (signingProperties.canRead()) {
 
         Properties props = new Properties()

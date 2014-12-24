@@ -4,7 +4,7 @@
 
     <style name="AppTheme" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">@color/blue_500</item>
-        <item name="colorPrimaryDark">@color/blue_500</item>
+        <item name="colorPrimaryDark">@color/blue_700</item>
         <item name="android:textColorPrimary">@color/grey_1000b</item>
         <item name="android:textColorSecondary">@color/grey_1000b</item>
         <item name="android:textColorTertiary">@color/grey_1000b</item>
@@ -14,7 +14,7 @@
     </style>
     <style name="ActionBarThemeOverlay" parent="">
         <item name="colorPrimary">@color/blue_500</item>
-        <item name="colorPrimaryDark">@color/blue_500</item>
+        <item name="colorPrimaryDark">@color/blue_700</item>
         <item name="android:textColorPrimary">@color/grey_1000w</item>
         <item name="android:textColorSecondary">@color/grey_1000w</item>
         <item name="android:textColorTertiary">@color/grey_1000w</item>
