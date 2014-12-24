@@ -39,6 +39,7 @@ public class ApiHandler {
                     .toArray(new String[langListUgly.size()]);
             String[] languageListPrettyStringArray = langListPretty
                     .toArray(new String[langListPretty.size()]);
+            reader.close();
             switch (mPrettyUgly) {
                 case "pretty":
                     return languageListPrettyStringArray;

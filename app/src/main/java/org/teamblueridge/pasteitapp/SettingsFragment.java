@@ -9,7 +9,7 @@ import android.preference.PreferenceManager;
 public class SettingsFragment extends PreferenceFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private static final String TAG = "TeamBlueRidge";
+    //private static final String TAG = "TeamBlueRidge";
 
     /* We have a listener that checks for any preference changes, so that we can act on it.
      * There is a case statement that actually acts on the change using Java 7's ability to use a

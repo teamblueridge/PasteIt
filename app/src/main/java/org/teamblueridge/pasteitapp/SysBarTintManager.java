@@ -325,7 +325,7 @@ public class SysBarTintManager {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 mStatusBarTintView.setBackground(drawable);
             } else {
-                mStatusBarTintView.setBackgroundDrawable(drawable);
+                mStatusBarTintView.setBackground(drawable);
             }
         }
     }
@@ -375,7 +375,7 @@ public class SysBarTintManager {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 mNavBarTintView.setBackground(drawable);
             } else {
-                mNavBarTintView.setBackgroundDrawable(drawable);
+                mNavBarTintView.setBackground(drawable);
             }
         }
     }
