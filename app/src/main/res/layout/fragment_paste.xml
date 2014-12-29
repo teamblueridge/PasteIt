@@ -32,7 +32,8 @@
         android:inputType="textNoSuggestions|textMultiLine|textLongMessage"
         android:gravity="top"
         android:hint="@string/paste_content"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:fontFamily="monospace" />
     <TextView
         android:id="@+id/paste_url_label"
         android:layout_width="match_parent"
