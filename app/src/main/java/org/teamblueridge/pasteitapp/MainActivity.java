@@ -27,6 +27,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -95,6 +98,10 @@ public class MainActivity extends ActionBarActivity {
             }
 
         });
+
+        // Get tracker.
+        Tracker t = ((Analytics) this.getApplication()).getTracker(
+                Analytics.TrackerName.APP_TRACKER);
 
         // Set up the status bar tint using the carbonrom SysBarTintManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
@@ -312,6 +319,9 @@ public class MainActivity extends ActionBarActivity {
                     mUserName = prefs.getString("pref_name", "");
                 } else {
                     mUserName = "Mobile User";
+                }
+                if (language == null || language.isEmpty()){
+                    language = "plaintext";
                 }
                 //Get ready to actually send everything to the server
                 HttpPost httppost = new HttpPost(mUploadUrl);

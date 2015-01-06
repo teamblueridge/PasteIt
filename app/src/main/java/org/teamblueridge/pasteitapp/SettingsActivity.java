@@ -7,6 +7,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.google.android.gms.analytics.Tracker;
+
 public class SettingsActivity extends ActionBarActivity {
     //private static final String TAG = "TeamBlueRidge";
 
@@ -19,6 +21,11 @@ public class SettingsActivity extends ActionBarActivity {
             setSupportActionBar(toolbar);
         }
         getSupportActionBar().getThemedContext();
+
+        // Get tracker.
+        Tracker t = ((Analytics) this.getApplication()).getTracker(
+                Analytics.TrackerName.APP_TRACKER);
+
 
         // Set up the status bar tint using the carbonrom SysBarTintManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
