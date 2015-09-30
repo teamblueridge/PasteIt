@@ -17,6 +17,7 @@ public class ApiHandler {
     private static final String TAG = "TeamBlueRidge";
 
     /**
+     * Gets a list of the languages supported by the remote server
      *
      * @param context Used in order to be able to read the JSON file
      * @param mPrettyUgly Used in order to identify which String[] to use

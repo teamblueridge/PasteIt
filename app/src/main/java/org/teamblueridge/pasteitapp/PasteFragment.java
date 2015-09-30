@@ -6,6 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+/**
+ * Loads the view for the Paste fragment
+ */
 public class PasteFragment extends Fragment {
     //private static final String TAG = "TeamBlueRidge";
 

@@ -40,7 +40,8 @@ public class NetworkUtil {
      * @return <code>true</code> if connected to WiFi
      */
     public static boolean isConnectedToWifi(Context context) {
-        final ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        final ConnectivityManager connManager =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         final NetworkInfo wifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         return wifi.isConnected();
     }

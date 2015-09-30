@@ -27,9 +27,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -52,16 +49,11 @@ public class MainActivity extends ActionBarActivity {
     private static final String TAG = "TeamBlueRidge";
 
     String mPasteUrlString;
-    String mUploadUrl;
-    String mUploadingText;
-    String mUserName;
-    String mToastText;
     String mFileContents;
     Intent mReceivedIntent;
     String mReceivedAction;
-    ProgressDialog pDialogFileLoad;
+    private ProgressDialog pDialogFileLoad;
     private ProgressDialog pDialogUpload;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,10 +91,6 @@ public class MainActivity extends ActionBarActivity {
 
         });
 
-        // Get tracker.
-        Tracker t = ((Analytics) this.getApplication()).getTracker(
-                Analytics.TrackerName.APP_TRACKER);
-
         // Set up the status bar tint using the carbonrom SysBarTintManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
                 & Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
@@ -125,7 +113,8 @@ public class MainActivity extends ActionBarActivity {
         mReceivedIntent = getIntent();
         mReceivedAction = mReceivedIntent.getAction();
         EditText pasteContentEditText = (EditText) findViewById(R.id.paste_content_edittext);
-        if (mReceivedAction.equals(Intent.ACTION_VIEW) || mReceivedAction.equals(Intent.ACTION_EDIT)) {
+        if (mReceivedAction.equals(Intent.ACTION_VIEW) ||
+                mReceivedAction.equals(Intent.ACTION_EDIT)) {
             String receivingText = getResources().getString(R.string.file_load);
             //Prepare the dialog for loading a file
             pDialogFileLoad = new ProgressDialog(MainActivity.this);
@@ -150,7 +139,8 @@ public class MainActivity extends ActionBarActivity {
         if (file.exists()) {
             new PopulateSpinner().execute();
         } else {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+            SharedPreferences prefs = PreferenceManager.
+                    getDefaultSharedPreferences(MainActivity.this);
             ApiHandler apiHandler = new ApiHandler();
             apiHandler.getLanguagesAvailable(prefs, this);
             new PopulateSpinner().execute();
@@ -196,6 +186,7 @@ public class MainActivity extends ActionBarActivity {
         Spinner languageSpinner = (Spinner) findViewById(R.id.language_spinner);
         Integer languageSelected = languageSpinner.getSelectedItemPosition();
         ApiHandler apiHandler = new ApiHandler();
+        String mToastText;
         String[] languageListStringArray =
                 apiHandler.getLanguageArray(getApplicationContext(), "pretty");
 
@@ -235,13 +226,17 @@ public class MainActivity extends ActionBarActivity {
     }
 
     /**
-     * AsyncTask for loading the file, from an intent, into the paste content edittext</p>
+     * AsyncTask for loading the file, from an intent, into the paste content EditText</p>
      * <p/>
      * doInBackground : get the file's contents loaded</p>
-     * onPostExecute : update the edittext's content</p>
+     * onPostExecute : update the EditText's content</p>
      */
     class LoadFile extends AsyncTask<String, String, String> {
-
+        /**
+         * Get the file's contents loaded
+         * @param args unused
+         * @return file contents
+         */
         protected String doInBackground(String... args) {
             try {
                 mReceivedAction = getIntent().getAction();
@@ -263,6 +258,10 @@ public class MainActivity extends ActionBarActivity {
             return mFileContents;
         }
 
+        /**
+         * Puts the contents of the file into the EditText
+         * @param file contents of file
+         */
         protected void onPostExecute(String file) {
             mFileContents = file;
             runOnUiThread(new Runnable() {
@@ -296,6 +295,8 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         protected void onPreExecute() {
+            String mUploadingText;
+
             mUploadingText = getResources().getString(R.string.paste_upload);
             super.onPreExecute();
             //Prepare the dialog for uploading the paste
@@ -308,6 +309,9 @@ public class MainActivity extends ActionBarActivity {
 
         // post the content in the background while showing the dialog
         protected String doInBackground(String... args) {
+            String mUploadUrl;
+            String mUserName;
+
             try {
                 HttpClient httpclient = new DefaultHttpClient();
                 UploadDownloadUrlPrep upDownPrep = new UploadDownloadUrlPrep();
@@ -318,7 +322,7 @@ public class MainActivity extends ActionBarActivity {
                 if (!prefs.getString("pref_name", "").isEmpty()) {
                     mUserName = prefs.getString("pref_name", "");
                 } else {
-                    mUserName = "Mobile User";
+                    mUserName = "Mobile User " + getString(R.string.version_name);
                 }
                 if (language == null || language.isEmpty()){
                     language = "plaintext";
@@ -361,7 +365,8 @@ public class MainActivity extends ActionBarActivity {
             runOnUiThread(new Runnable() {
                 public void run() {
                     //Create a clickable link from pasteUrlString for user (opens in web browser)
-                    String linkText = "<a href=\"" + mPasteUrlString + "\">" + mPasteUrlString + "</a>";
+                    String linkText = "<a href=\"" + mPasteUrlString + "\">"
+                            + mPasteUrlString + "</a>";
                     pasteUrlLabel.setText(Html.fromHtml(linkText));
                     pasteUrlLabel.setMovementMethod(LinkMovementMethod.getInstance());
                 }
@@ -391,7 +396,8 @@ public class MainActivity extends ActionBarActivity {
             super.onPostExecute(langListPretty);
             runOnUiThread(new Runnable() {
                 public void run() {
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                    SharedPreferences prefs = PreferenceManager.
+                            getDefaultSharedPreferences(MainActivity.this);
                     String positionListPref = prefs.getString("pref_default_language", "-1");
                     ArrayAdapter<String> uglyList = new ArrayAdapter<>
                             (getApplicationContext(), R.layout.spinner_item, apiHandler

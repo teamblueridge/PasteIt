@@ -22,16 +22,10 @@ public class SettingsActivity extends ActionBarActivity {
         }
         getSupportActionBar().getThemedContext();
 
-        // Get tracker.
-        Tracker t = ((Analytics) this.getApplication()).getTracker(
-                Analytics.TrackerName.APP_TRACKER);
-
-
         // Set up the status bar tint using the carbonrom SysBarTintManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
                 & Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
             SysBarTintManager.setupTranslucency(this, true, false);
-
             SysBarTintManager mTintManager = new SysBarTintManager(this);
             mTintManager.setStatusBarTintEnabled(true);
             mTintManager.setActionBarTintEnabled(true);
