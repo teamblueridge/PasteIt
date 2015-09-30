@@ -12,7 +12,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -27,24 +28,19 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "TeamBlueRidge";
 
@@ -52,19 +48,20 @@ public class MainActivity extends ActionBarActivity {
     String mFileContents;
     Intent mReceivedIntent;
     String mReceivedAction;
-    private ProgressDialog pDialogFileLoad;
     private ProgressDialog pDialogUpload;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         //We're using the toolbar from AppCompat as our actionbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
-        getSupportActionBar().getThemedContext();
         // Set-up the paste fragment and give it a name so we can track it
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
@@ -80,12 +77,14 @@ public class MainActivity extends ActionBarActivity {
                 int stackHeight = getFragmentManager().getBackStackEntryCount();
                 /* Check if we have anything on the stack. If we do, we need to have the back button
                  * display in in the ActionBar */
-                if (stackHeight > 0) {
-                    getSupportActionBar().setHomeButtonEnabled(true);
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                } else {
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-                    getSupportActionBar().setHomeButtonEnabled(false);
+                if (getSupportActionBar() != null) {
+                    if (stackHeight > 0) {
+                        getSupportActionBar().setHomeButtonEnabled(true);
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                    } else {
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                        getSupportActionBar().setHomeButtonEnabled(false);
+                    }
                 }
             }
 
@@ -99,12 +98,12 @@ public class MainActivity extends ActionBarActivity {
             SysBarTintManager mTintManager = new SysBarTintManager(this);
             mTintManager.setStatusBarTintEnabled(true);
             mTintManager.setActionBarTintEnabled(true);
-            mTintManager.setStatusBarTintColor(getResources().getColor(R.color.blue_700));
+            mTintManager.setStatusBarTintColor(ContextCompat.getColor(this,R.color.blue_700));
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
             Window window = this.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.setStatusBarColor(this.getResources().getColor(R.color.blue_700));
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.blue_700));
         }
     }
 
@@ -117,7 +116,7 @@ public class MainActivity extends ActionBarActivity {
                 mReceivedAction.equals(Intent.ACTION_EDIT)) {
             String receivingText = getResources().getString(R.string.file_load);
             //Prepare the dialog for loading a file
-            pDialogFileLoad = new ProgressDialog(MainActivity.this);
+            ProgressDialog pDialogFileLoad = new ProgressDialog(MainActivity.this);
             pDialogFileLoad.setMessage(receivingText);
             pDialogFileLoad.setIndeterminate(true);
             pDialogFileLoad.setCancelable(false);
@@ -220,9 +219,12 @@ public class MainActivity extends ActionBarActivity {
      * @param title The title to be used for the ActionBar
      */
     public void setActionBarTitle(String title) {
+
         //Set the title of the action bar
         //Called from the fragments
-        getSupportActionBar().setTitle(title);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(title);
+        }
     }
 
     /**
@@ -313,7 +315,7 @@ public class MainActivity extends ActionBarActivity {
             String mUserName;
 
             try {
-                HttpClient httpclient = new DefaultHttpClient();
+                //HttpClient httpclient = new DefaultHttpClient();
                 UploadDownloadUrlPrep upDownPrep = new UploadDownloadUrlPrep();
                 mUploadUrl = upDownPrep.prepUrl(prefs, "upCreate");
                 String language = args[0];
@@ -328,20 +330,32 @@ public class MainActivity extends ActionBarActivity {
                     language = "plaintext";
                 }
                 //Get ready to actually send everything to the server
-                HttpPost httppost = new HttpPost(mUploadUrl);
+                URL url = new URL(mUploadUrl);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 // HTTP Header data
-                httppost.setHeader("User-Agent", HTTP_USER_AGENT);
-                List<NameValuePair> nameValuePairs = new ArrayList<>(2);
-                nameValuePairs.add(new BasicNameValuePair("title", pasteNameString));
-                nameValuePairs.add(new BasicNameValuePair("text", pasteContentString));
-                nameValuePairs.add(new BasicNameValuePair("name", mUserName));
-                nameValuePairs.add(new BasicNameValuePair("lang", language));
-                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-                // Execute HTTP Post Request
-                HttpResponse response = httpclient.execute(httppost);
-                InputStream in = response.getEntity().getContent();
+                urlConnection.setRequestMethod("POST");
+                urlConnection.setDoInput(true);
+                urlConnection.setDoOutput(true);
+                urlConnection.setRequestProperty("User-Agent", HTTP_USER_AGENT);
+                Uri.Builder builder = new Uri.Builder()
+                        .appendQueryParameter("title", pasteNameString)
+                        .appendQueryParameter("text", pasteContentString)
+                        .appendQueryParameter("name", mUserName)
+                        .appendQueryParameter("lang", language);
+                String query = builder.build().getEncodedQuery();
+
+                OutputStream os = urlConnection.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                writer.write(query);
+                writer.flush();
+                writer.close();
+                os.close();
+                urlConnection.connect();
+
+                //Get the URL of the paste
                 StringBuilder stringbuilder = new StringBuilder();
-                BufferedReader bfrd = new BufferedReader(new InputStreamReader(in), 1024);
+                BufferedReader bfrd = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                 String line;
                 while ((line = bfrd.readLine()) != null)
                     stringbuilder.append(line);
