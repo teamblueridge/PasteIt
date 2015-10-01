@@ -1,8 +1,11 @@
 package org.teamblueridge.pasteitapp;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.support.v7.app.AlertDialog;
 import android.util.JsonReader;
 import android.util.Log;
 
@@ -70,8 +73,8 @@ public class ApiHandler {
 
         UploadDownloadUrlPrep upDownPrep = new UploadDownloadUrlPrep();
         languageUrl = upDownPrep.prepUrl(sharedPreferences, "downLangs");
-
-        new GetLangs().execute(languageUrl, filename, context);
+        GetLangs getLangs = new GetLangs((Activity)context);
+        getLangs.execute(languageUrl, filename, context);
 
     }
 
@@ -79,25 +82,62 @@ public class ApiHandler {
      * ASyncTask to get the languages from the server and write them to a file, "languages" which
      * can be read later
      */
-    class GetLangs extends AsyncTask<Object, Void, Void> {
+    public class GetLangs extends AsyncTask<Object, String, String> {
+        private Activity activity;
+
+        public GetLangs(Activity activity) {
+            this.activity = activity;
+        }
 
         @Override
-        protected Void doInBackground(Object... params) {
+        protected String doInBackground(Object... params) {
             String languageUrl = (String) params[0];
             String filename = (String) params[1];
             Context context = (Context) params[2];
             String languageList = NetworkUtil.readFromUrl(languageUrl);
+            String validLanguageFile;
             try {
                 FileOutputStream outputStream;
                 outputStream = context.openFileOutput(filename, Context.MODE_PRIVATE);
-                outputStream.write(languageList.getBytes());
+                if (languageList.length() > 0) {
+                    outputStream.write(languageList.getBytes());
+                    validLanguageFile = "true";
+                } else {
+                    outputStream.write("{\"text\":\"Plain Text\"}".getBytes());
+                    validLanguageFile = "false";
+                }
                 outputStream.close();
+
             } catch (IOException e) {
-                Log.e(TAG,e.toString());
+                Log.e(TAG, e.toString());
                 e.printStackTrace();
+                validLanguageFile = "false";
             }
-            return null;
+            return validLanguageFile;
         }
 
+        public void onPostExecute(String valid) {
+            boolean isValid = Boolean.parseBoolean(valid);
+            if(!isValid) {
+                activity.runOnUiThread(new Runnable() {
+                    public void run() {
+
+                        AlertDialog.Builder builder1 = new AlertDialog.Builder(activity);
+                        builder1.setMessage("Your API key is incorrect. Please fix it in settings. "
+                                + "The only language available for uploads is Plain Text");
+                        builder1.setCancelable(true);
+                        builder1.setNeutralButton(android.R.string.ok,
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+
+                        AlertDialog alert11 = builder1.create();
+                        alert11.show();
+                    }
+                });
+            }
+        }
     }
 }

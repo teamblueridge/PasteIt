@@ -37,7 +37,6 @@ android {
         }
     }
     defaultConfig {
-        useJack true
         applicationId "org.teamblueridge.pasteitapp"
         minSdkVersion 16
         targetSdkVersion 23

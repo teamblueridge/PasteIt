@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
             SysBarTintManager mTintManager = new SysBarTintManager(this);
             mTintManager.setStatusBarTintEnabled(true);
             mTintManager.setActionBarTintEnabled(true);
-            mTintManager.setStatusBarTintColor(ContextCompat.getColor(this,R.color.blue_700));
+            mTintManager.setStatusBarTintColor(ContextCompat.getColor(this, R.color.blue_700));
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
             Window window = this.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
         ApiHandler apiHandler = new ApiHandler();
         String mToastText;
         String[] languageListStringArray =
-                apiHandler.getLanguageArray(getApplicationContext(), "pretty");
+                apiHandler.getLanguageArray(getApplicationContext(), "ugly");
 
         String language = languageListStringArray[languageSelected];
         if (!pasteContentString.isEmpty()) {
@@ -244,6 +244,7 @@ public class MainActivity extends AppCompatActivity {
                 mReceivedAction = getIntent().getAction();
                 Uri receivedText = mReceivedIntent.getData();
                 InputStream inputStream = getContentResolver().openInputStream(receivedText);
+                assert inputStream != null;
                 BufferedReader reader = new BufferedReader(new InputStreamReader(
                         inputStream));
                 StringBuilder stringBuilder = new StringBuilder();
@@ -291,9 +292,9 @@ public class MainActivity extends AppCompatActivity {
         String pasteNameString = pasteNameEditText.getText().toString();
         EditText pasteContentEditText = (EditText) findViewById(R.id.paste_content_edittext);
         String pasteContentString = pasteContentEditText.getText().toString();
-        final String HTTP_USER_AGENT = "Paste It v" + getString(R.string.version_name) +
-                ", an Android app for pasting to Stikked " +
-                "(https://play.google.com/store/apps/details?id=org.teamblueridge.pasteitapp)";
+        final String HTTP_USER_AGENT = "Paste It v" + getString(R.string.version_name)
+                + ", an Android app for pasting to Stikked "
+                + "(https://play.google.com/store/apps/details?id=org.teamblueridge.pasteitapp)";
 
         @Override
         protected void onPreExecute() {
@@ -327,7 +328,7 @@ public class MainActivity extends AppCompatActivity {
                     mUserName = "Mobile User " + getString(R.string.version_name);
                 }
                 if (language == null || language.isEmpty()){
-                    language = "plaintext";
+                    language = "text";
                 }
                 //Get ready to actually send everything to the server
                 URL url = new URL(mUploadUrl);
