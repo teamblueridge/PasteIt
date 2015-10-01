@@ -41,7 +41,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 23
         versionCode increaseVersionCode()
-        versionName "5.2.0." + versionCode
+        versionName "5.2.1." + versionCode
     }
     buildTypes {
         release {
