@@ -7,6 +7,7 @@ import android.util.Log;
  * Class to handle the create, recent, and languages URLs for the Stikked API</p>
  *
  * @author Kyle Laker (kalaker)
+ * @version 1.0
  */
 public class UploadDownloadUrlPrep {
     private static final String TAG = "TeamBlueRidge";
@@ -39,6 +40,7 @@ public class UploadDownloadUrlPrep {
         } else {
             mPasteDomain = "https://paste.teamblueridge.org";
         }
+
         // Only set the API key for Team BlueRidge because we know our key
         if (mPasteDomain.equals("https://paste.teamblueridge.org")) {
             mUploadUrl = mPasteDomain + CREATE_WITH_APIKEY + TEAMBLUERIDGE_APIKEY;
@@ -56,6 +58,7 @@ public class UploadDownloadUrlPrep {
                 mRecentDownloadUrl = mPasteDomain + "/api/recent";
             }
         }
+
         switch (upDown) {
             case "upCreate":
                 mUrl = mUploadUrl;
@@ -70,7 +73,6 @@ public class UploadDownloadUrlPrep {
                 Log.e(TAG, "Unknown URL case");
                 break;
         }
-
 
         return mUrl;
     }

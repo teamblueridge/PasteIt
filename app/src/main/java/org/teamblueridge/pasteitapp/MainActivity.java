@@ -90,16 +90,15 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
-        // Set up the status bar tint using the carbonrom SysBarTintManager
+        // Set up the status bar tint using the CarbonROM SysBarTintManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
                 & Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
             SysBarTintManager.setupTranslucency(this, true, false);
-
             SysBarTintManager mTintManager = new SysBarTintManager(this);
             mTintManager.setStatusBarTintEnabled(true);
             mTintManager.setActionBarTintEnabled(true);
             mTintManager.setStatusBarTintColor(ContextCompat.getColor(this, R.color.blue_700));
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = this.getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -236,6 +235,7 @@ public class MainActivity extends AppCompatActivity {
     class LoadFile extends AsyncTask<String, String, String> {
         /**
          * Get the file's contents loaded
+         *
          * @param args unused
          * @return file contents
          */
@@ -256,13 +256,13 @@ public class MainActivity extends AppCompatActivity {
                 mFileContents = stringBuilder.toString();
             } catch (IOException e) {
                 Log.e(TAG, e.toString());
-
             }
             return mFileContents;
         }
 
         /**
          * Puts the contents of the file into the EditText
+         *
          * @param file contents of file
          */
         protected void onPostExecute(String file) {
@@ -286,15 +286,15 @@ public class MainActivity extends AppCompatActivity {
      * onPostExecute : Close the dialog box and update the paste url label</p>
      */
     class UploadPaste extends AsyncTask<String, String, String> {
+        final String HTTP_USER_AGENT = "Paste It v" + getString(R.string.version_name)
+                + ", an Android app for pasting to Stikked "
+                + "(https://play.google.com/store/apps/details?id=org.teamblueridge.pasteitapp)";
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
         TextView pasteUrlLabel = (TextView) findViewById(R.id.paste_url_label);
         EditText pasteNameEditText = (EditText) findViewById(R.id.paste_name_edittext);
         String pasteNameString = pasteNameEditText.getText().toString();
         EditText pasteContentEditText = (EditText) findViewById(R.id.paste_content_edittext);
         String pasteContentString = pasteContentEditText.getText().toString();
-        final String HTTP_USER_AGENT = "Paste It v" + getString(R.string.version_name)
-                + ", an Android app for pasting to Stikked "
-                + "(https://play.google.com/store/apps/details?id=org.teamblueridge.pasteitapp)";
 
         @Override
         protected void onPreExecute() {
@@ -327,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     mUserName = "Mobile User " + getString(R.string.version_name);
                 }
-                if (language == null || language.isEmpty()){
+                if (language == null || language.isEmpty()) {
                     language = "text";
                 }
                 //Get ready to actually send everything to the server
@@ -356,9 +356,10 @@ public class MainActivity extends AppCompatActivity {
 
                 //Get the URL of the paste
                 StringBuilder stringbuilder = new StringBuilder();
-                BufferedReader bfrd = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                BufferedReader urlReader =
+                        new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                 String line;
-                while ((line = bfrd.readLine()) != null)
+                while ((line = urlReader.readLine()) != null)
                     stringbuilder.append(line);
                 mPasteUrlString = stringbuilder.toString();
             } catch (IOException e) {

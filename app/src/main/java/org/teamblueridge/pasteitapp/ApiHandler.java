@@ -15,6 +15,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+/**
+ * Communicates with the Stikked API to get the data necessary
+ *
+ * @author Kyle Laker (kalaker)
+ * @see UploadDownloadUrlPrep
+ */
 public class ApiHandler {
 
     private static final String TAG = "TeamBlueRidge";
@@ -22,7 +28,7 @@ public class ApiHandler {
     /**
      * Gets a list of the languages supported by the remote server
      *
-     * @param context Used in order to be able to read the JSON file
+     * @param context     Used in order to be able to read the JSON file
      * @param mPrettyUgly Used in order to identify which String[] to use
      * @return a String[], either pretty or ugly, depending on what is needed
      */
@@ -62,7 +68,7 @@ public class ApiHandler {
     }
 
     /**
-     * Does some preparation before calling the GetLangs ASyncTask.
+     * Does some preparation before calling the GetLanguages ASyncTask.
      *
      * @param sharedPreferences The shared preferences to be used for determining the domains, etc.
      */
@@ -73,8 +79,8 @@ public class ApiHandler {
 
         UploadDownloadUrlPrep upDownPrep = new UploadDownloadUrlPrep();
         languageUrl = upDownPrep.prepUrl(sharedPreferences, "downLangs");
-        GetLangs getLangs = new GetLangs((Activity)context);
-        getLangs.execute(languageUrl, filename, context);
+        GetLanguages getLanguages = new GetLanguages((Activity) context);
+        getLanguages.execute(languageUrl, filename, context);
 
     }
 
@@ -82,12 +88,10 @@ public class ApiHandler {
      * ASyncTask to get the languages from the server and write them to a file, "languages" which
      * can be read later
      */
-    public class GetLangs extends AsyncTask<Object, String, String> {
+    public class GetLanguages extends AsyncTask<Object, String, String> {
         private Activity activity;
 
-        public GetLangs(Activity activity) {
-            this.activity = activity;
-        }
+        public GetLanguages(Activity activity) { this.activity = activity; }
 
         @Override
         protected String doInBackground(Object... params) {
@@ -118,13 +122,13 @@ public class ApiHandler {
 
         public void onPostExecute(String valid) {
             boolean isValid = Boolean.parseBoolean(valid);
-            if(!isValid) {
+            if (!isValid) {
                 activity.runOnUiThread(new Runnable() {
                     public void run() {
 
                         AlertDialog.Builder builder1 = new AlertDialog.Builder(activity);
-                        builder1.setMessage("Your API key is incorrect. Please fix it in settings. "
-                                + "The only language available for uploads is Plain Text");
+                        builder1.setMessage("Your API key is incorrect. Please fix it in settings."
+                                + " The only language available for uploads is Plain Text");
                         builder1.setCancelable(true);
                         builder1.setNeutralButton(android.R.string.ok,
                                 new DialogInterface.OnClickListener() {

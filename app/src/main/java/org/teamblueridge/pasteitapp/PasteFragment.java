@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 public class PasteFragment extends Fragment {
     //private static final String TAG = "TeamBlueRidge";
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

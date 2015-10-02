@@ -2,6 +2,7 @@ package org.teamblueridge.pasteitapp;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.net.Network;
 import android.net.NetworkInfo;
 import android.util.Log;
 
@@ -33,17 +34,6 @@ public class NetworkUtil {
             }
         }
         return anythingConnected;
-    }
-
-    /**
-     * @param context the Context
-     * @return <code>true</code> if connected to WiFi
-     */
-    public static boolean isConnectedToWifi(Context context) {
-        final ConnectivityManager connManager =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        final NetworkInfo wifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        return wifi.isConnected();
     }
 
     /**

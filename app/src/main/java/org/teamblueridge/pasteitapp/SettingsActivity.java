@@ -20,8 +20,7 @@ public class SettingsActivity extends AppCompatActivity {
             setSupportActionBar(toolbar);
         }
 
-
-        // Set up the status bar tint using the carbonrom SysBarTintManager
+        // Set up the status bar tint using the CarbonROM SysBarTintManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
                 & Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
             SysBarTintManager.setupTranslucency(this, true, false);
@@ -41,6 +40,7 @@ public class SettingsActivity extends AppCompatActivity {
             getSupportActionBar().setHomeButtonEnabled(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
+
         // Display the fragment as the main content.
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
@@ -48,7 +48,5 @@ public class SettingsActivity extends AppCompatActivity {
                     .addToBackStack("SettingsFragment")
                     .commit();
         }
-
     }
-
 }
