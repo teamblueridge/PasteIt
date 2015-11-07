@@ -11,7 +11,6 @@ import android.util.Log
  * @version 1.0
  */
 class UploadDownloadUrlPrep {
-    private var mUrl: String? = null
 
     /**
      * Gets the proper URL for uploading a paste or for downloading a list of recent pastes (JSON)
@@ -26,6 +25,7 @@ class UploadDownloadUrlPrep {
     fun prepUrl(prefs: SharedPreferences, upDown: String): String {
 
         // Ensure that the paste URL is set, if not, default to Team BlueRidge
+        var mUrl: String? = null
         val mPasteDomain: String
         val mLangDownloadUrl: String
         val mRecentDownloadUrl: String
