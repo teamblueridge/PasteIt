@@ -44,10 +44,10 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "TeamBlueRidge";
 
-    String mPasteUrlString;
-    String mFileContents;
-    Intent mReceivedIntent;
-    String mReceivedAction;
+    private String mPasteUrlString;
+    private String mFileContents;
+    private Intent mReceivedIntent;
+    private String mReceivedAction;
     private ProgressDialog pDialogUpload;
 
     @Override
@@ -251,6 +251,7 @@ public class MainActivity extends AppCompatActivity {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     stringBuilder.append(line);
+                    stringBuilder.append("\n");
                 }
                 inputStream.close();
                 mFileContents = stringBuilder.toString();
