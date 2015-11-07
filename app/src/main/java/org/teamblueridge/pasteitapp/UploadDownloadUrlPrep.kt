@@ -4,10 +4,10 @@ import android.content.SharedPreferences
 import android.util.Log
 
 /**
- * Class to handle the create, recent, and languages URLs for the Stikked API
-
+ * Handle the URLs for uploading pastes, downloading languages, and downloading
+ * recent pastes
+ *
  * @author Kyle Laker (kalaker)
- * *
  * @version 1.0
  */
 class UploadDownloadUrlPrep {
@@ -17,25 +17,22 @@ class UploadDownloadUrlPrep {
      * or a list of languages the server supports (JSON) for syntax highlighting
      *
      * @param prefs  The preferences to be able to access the domain, API key, etc.
-     * @param upDown "upCreate" for creating a new paste
-     *               "downLangs" for getting languages
+     * @param upDown "upCreate" for creating a new paste<p>
+     *               "downLangs" for getting languages<p>
      *               "downRecents" for recent pasts
      * @return The URL to be used, with the API key if necessary
      */
     fun prepUrl(prefs: SharedPreferences, upDown: String): String {
-
         // Ensure that the paste URL is set, if not, default to Team BlueRidge
-        var mUrl: String? = null
-        val mPasteDomain: String
-        val mLangDownloadUrl: String
-        val mRecentDownloadUrl: String
-        val mUploadUrl: String
+        var mPasteDomain: String
+        var mLangDownloadUrl: String
+        var mRecentDownloadUrl: String
+        var mUploadUrl: String
 
-        if (prefs.getString("pref_domain", "").length <= 0) {
+        if (prefs.getString("pref_domain", "").length >= 0)
             mPasteDomain = prefs.getString("pref_domain", "")
-        } else {
+        else
             mPasteDomain = "https://paste.teamblueridge.org"
-        }
 
         // Only set the API key for Team BlueRidge because we know our key
         if (mPasteDomain == "https://paste.teamblueridge.org") {
@@ -43,8 +40,8 @@ class UploadDownloadUrlPrep {
             mLangDownloadUrl = mPasteDomain + LANGS_WITH_APIKEY + TEAMBLUERIDGE_APIKEY
             mRecentDownloadUrl = mPasteDomain + RECENT_WITH_APIKEY + TEAMBLUERIDGE_APIKEY
         } else {
-            if (prefs.getString("pref_api_key", "").length <= 0) {
-                val mPasteApiKey = prefs.getString("pref_api_key", "")
+            if (prefs.getString("pref_api_key", "").length >= 0) {
+                var mPasteApiKey = prefs.getString("pref_api_key", "")
                 mUploadUrl = mPasteDomain + CREATE_WITH_APIKEY + mPasteApiKey
                 mLangDownloadUrl = mPasteDomain + LANGS_WITH_APIKEY + mPasteApiKey
                 mRecentDownloadUrl = mPasteDomain + RECENT_WITH_APIKEY + mPasteApiKey
@@ -56,13 +53,14 @@ class UploadDownloadUrlPrep {
         }
 
         when (upDown) {
-            "upCreate" -> mUrl = mUploadUrl
-            "downLangs" -> mUrl = mLangDownloadUrl
-            "downRecent" -> mUrl = mRecentDownloadUrl
-            else -> Log.e(TAG, "Unknown URL case")
+            "upCreate" -> return mUploadUrl
+            "downLangs" -> return mLangDownloadUrl
+            "downRecent" -> return mRecentDownloadUrl
+            else -> {
+                Log.e(TAG, "Unknown URL case")
+                return ""
+            }
         }
-
-        return mUrl as String
     }
 
     companion object {
