@@ -236,12 +236,7 @@ class MainActivity : AppCompatActivity() {
                 val reader = BufferedReader(InputStreamReader(
                         inputStream))
                 val stringBuilder = StringBuilder()
-                var line: String
-                while ((reader.ready())) {
-                    line = reader.readLine()
-                    stringBuilder.append(line)
-                    stringBuilder.append("\n")
-                }
+                reader.forEachLine {stringBuilder.append(it + "\n")}
                 inputStream!!.close()
                 mFileContents = stringBuilder.toString()
             } catch (e: IOException) {
@@ -327,7 +322,10 @@ class MainActivity : AppCompatActivity() {
                 urlConnection.doInput = true
                 urlConnection.doOutput = true
                 urlConnection.setRequestProperty("User-Agent", HTTP_USER_AGENT)
-                val builder = Uri.Builder().appendQueryParameter("title", pasteNameString).appendQueryParameter("text", pasteContentString).appendQueryParameter("name", mUserName).appendQueryParameter("lang", language)
+                val builder = Uri.Builder().appendQueryParameter("title", pasteNameString)
+                        .appendQueryParameter("text", pasteContentString)
+                        .appendQueryParameter("name", mUserName)
+                        .appendQueryParameter("lang", language)
                 val query = builder.build().encodedQuery
 
                 val os = urlConnection.outputStream
@@ -342,11 +340,7 @@ class MainActivity : AppCompatActivity() {
                 //Get the URL of the paste
                 val stringbuilder = StringBuilder()
                 val urlReader = BufferedReader(InputStreamReader(urlConnection.inputStream))
-                var line: String
-                while (urlReader.ready()) {
-                    line = urlReader.readLine()
-                    stringbuilder.append(line)
-                }
+                urlReader.forEachLine {stringbuilder.append(it)}
                 mPasteUrlString = stringbuilder.toString()
             } catch (e: IOException) {
                 Log.e(TAG, e.toString())
@@ -399,7 +393,8 @@ class MainActivity : AppCompatActivity() {
                 override fun run() {
                     val prefs = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
                     val positionListPref = prefs.getString("pref_default_language", "-1")
-                    val uglyList = ArrayAdapter(applicationContext, R.layout.spinner_item, apiHandler.getLanguageArray(applicationContext, "ugly"))
+                    val uglyList = ArrayAdapter(applicationContext, R.layout.spinner_item,
+                            apiHandler.getLanguageArray(applicationContext, "ugly"))
                     try {
                         val spinner = findViewById(R.id.language_spinner) as Spinner
                         val adapter = ArrayAdapter(applicationContext,
