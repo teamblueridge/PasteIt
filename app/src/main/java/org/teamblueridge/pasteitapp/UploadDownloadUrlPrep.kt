@@ -23,13 +23,19 @@ class UploadDownloadUrlPrep {
      * @return The URL to be used, with the API key if necessary
      */
     fun prepUrl(prefs: SharedPreferences, upDown: String): String {
+        val TAG = "TeamBlueRidge"
+        val TEAMBLUERIDGE_APIKEY = "teamblueridgepaste"
+        val LANGS_WITH_APIKEY = "/api/langs?apikey="
+        val CREATE_WITH_APIKEY = "/api/create?apikey="
+        val RECENT_WITH_APIKEY = "/api/recent?apikey="
+
         // Ensure that the paste URL is set, if not, default to Team BlueRidge
         var mPasteDomain: String
         var mLangDownloadUrl: String
         var mRecentDownloadUrl: String
         var mUploadUrl: String
 
-        if (prefs.getString("pref_domain", "").length >= 0)
+        if (prefs.getString("pref_domain", "").length != 0)
             mPasteDomain = prefs.getString("pref_domain", "")
         else
             mPasteDomain = "https://paste.teamblueridge.org"
@@ -40,7 +46,7 @@ class UploadDownloadUrlPrep {
             mLangDownloadUrl = mPasteDomain + LANGS_WITH_APIKEY + TEAMBLUERIDGE_APIKEY
             mRecentDownloadUrl = mPasteDomain + RECENT_WITH_APIKEY + TEAMBLUERIDGE_APIKEY
         } else {
-            if (prefs.getString("pref_api_key", "").length >= 0) {
+            if (prefs.getString("pref_api_key", "").length != 0) {
                 var mPasteApiKey = prefs.getString("pref_api_key", "")
                 mUploadUrl = mPasteDomain + CREATE_WITH_APIKEY + mPasteApiKey
                 mLangDownloadUrl = mPasteDomain + LANGS_WITH_APIKEY + mPasteApiKey
@@ -61,13 +67,5 @@ class UploadDownloadUrlPrep {
                 return ""
             }
         }
-    }
-
-    companion object {
-        private val TAG = "TeamBlueRidge"
-        private val TEAMBLUERIDGE_APIKEY = "teamblueridgepaste"
-        private val LANGS_WITH_APIKEY = "/api/langs?apikey="
-        private val CREATE_WITH_APIKEY = "/api/create?apikey="
-        private val RECENT_WITH_APIKEY = "/api/recent?apikey="
     }
 }

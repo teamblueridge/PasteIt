@@ -10,7 +10,6 @@ import android.util.JsonReader
 import android.util.Log
 
 import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStreamReader
 import java.util.ArrayList
@@ -85,38 +84,33 @@ class ApiHandler {
      * ASyncTask to get the languages from the server and write them to a file, "languages" which
      * can be read later
      */
-    inner class GetLanguages(private val activity: Activity) : AsyncTask<Any, String, String>() {
+    inner class GetLanguages(private val activity: Activity) : AsyncTask<Any, String, Boolean>() {
 
-        override fun doInBackground(vararg params: Any): String {
-            val languageUrl = params[0] as String
-            val filename = params[1] as String
-            val context = params[2] as Context
-            val languageList = NetworkUtil.readFromUrl(languageUrl)
-            val validLanguageFile: String
+        override fun doInBackground(vararg params: Any): Boolean {
+            var languageUrl = params[0] as String
+            var filename = params[1] as String
+            var context = params[2] as Context
+            var languageList = NetworkUtil.readFromUrl(languageUrl)
             try {
-                val outputStream: FileOutputStream
-                outputStream = context.openFileOutput(filename, Context.MODE_PRIVATE)
-                if (languageList.length > 0) {
-                    outputStream.write(languageList.toByteArray())
-                    validLanguageFile = "true"
-                } else {
-                    outputStream.write("{\"text\":\"Plain Text\"}".toByteArray())
-                    validLanguageFile = "false"
+                context.openFileOutput(filename, Context.MODE_PRIVATE).use {
+                    if (languageList.length > 0) {
+                        it.write(languageList.toByteArray())
+                        return true
+                    } else {
+                        it.write("{\"text\":\"Plain Text\"}".toByteArray())
+                        return false
+                    }
                 }
-                outputStream.close()
-
             } catch (e: IOException) {
                 Log.e(TAG, e.toString())
                 e.printStackTrace()
-                validLanguageFile = "false"
+                return false
             }
 
-            return validLanguageFile
         }
 
-        public override fun onPostExecute(valid: String) {
-            val isValid = java.lang.Boolean.parseBoolean(valid)
-            if (!isValid) {
+        public override fun onPostExecute(valid: Boolean) {
+            if (!valid) {
                 activity.runOnUiThread(object : Runnable {
                     override fun run() {
 
