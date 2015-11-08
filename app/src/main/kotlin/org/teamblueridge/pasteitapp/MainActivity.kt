@@ -1,5 +1,6 @@
 package org.teamblueridge.pasteitapp
 
+import android.Manifest
 import android.app.FragmentManager
 import android.app.ProgressDialog
 import android.content.ClipData
@@ -7,12 +8,15 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.text.Html
@@ -47,6 +51,7 @@ class MainActivity : AppCompatActivity() {
     private var mReceivedIntent: Intent? = null
     private var mReceivedAction: String? = null
     private var pDialogUpload: ProgressDialog? = null
+    private val TAG = "TeamBlueRidge"
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -93,6 +98,32 @@ class MainActivity : AppCompatActivity() {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             window.statusBarColor = ContextCompat.getColor(this, R.color.blue_700)
+        }
+
+        /*if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
+        }*/
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+                builder.setMessage(R.string.permission_explanation)
+                        .setTitle(R.string.permission_explanation_title);
+                var dialog: AlertDialog = builder.create()
+                ActivityCompat.requestPermissions(this,
+                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                        0);
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                0);
+            }
         }
     }
 
@@ -251,7 +282,7 @@ class MainActivity : AppCompatActivity() {
 
          * @param file contents of file
          */
-        override fun onPostExecute(file: String) {
+        override fun onPostExecute(file: String?) {
             mFileContents = file
             runOnUiThread(object : Runnable {
                 override fun run() {
@@ -411,10 +442,4 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
-
-    companion object {
-
-        private val TAG = "TeamBlueRidge"
-    }
-
 }

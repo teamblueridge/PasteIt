@@ -3,18 +3,13 @@ apply plugin: 'kotlin-android'
 def signingProperties = file('../PasteIt.signing.properties')
 def increaseVersionCode() {
     def versionPropsFile = file('version.properties')
-
     if (versionPropsFile.canRead()) {
         def Properties versionProps = new Properties()
-
         versionProps.load(new FileInputStream(versionPropsFile))
-
         def code = versionProps['VERSION_CODE'].toInteger() + 1
-
         versionProps['VERSION_CODE'] = code.toString()
         versionProps.store(versionPropsFile.newWriter(), null)
         return code
-
     } else {
         throw new GradleException("Could not read version.properties!")
     }
@@ -24,7 +19,6 @@ android {
     compileSdkVersion 23
     buildToolsVersion '23.0.1'
     if (signingProperties.canRead()) {
-
         Properties props = new Properties()
         props.load(new FileInputStream(file(signingProperties)))
 

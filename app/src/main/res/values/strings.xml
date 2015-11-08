@@ -16,6 +16,9 @@
     <string name="file_load">Loading file…</string>
     <string name="no_network">No network connection available</string>
     <string name="invalid_language">Choose another language</string>
+    <string name="permission_explanation">Paste It needs access to your storage in order to open files
+    you want to paste</string>
+    <string name="permission_explanation_title">Need Permission</string>
 
     <!--Preferences-->
     <string name="pref_general">General</string>
