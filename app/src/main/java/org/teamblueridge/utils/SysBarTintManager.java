@@ -1,4 +1,4 @@
-package org.teamblueridge.pasteitapp;
+package org.teamblueridge.utils;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
