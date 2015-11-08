@@ -15,7 +15,6 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.text.Html
@@ -28,10 +27,7 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
-import kotlinx.android.synthetic.fragment_paste.language_spinner
-import kotlinx.android.synthetic.fragment_paste.paste_content_edittext
-import kotlinx.android.synthetic.fragment_paste.paste_name_edittext
-import kotlinx.android.synthetic.fragment_paste.paste_url_label
+import kotlinx.android.synthetic.fragment_paste.*
 import org.teamblueridge.utils.NetworkUtil
 import org.teamblueridge.utils.SysBarTintManager
 import java.io.*
@@ -97,25 +93,6 @@ class MainActivity : AppCompatActivity() {
             window.statusBarColor = ContextCompat.getColor(this, R.color.blue_700)
         }
 
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_CONTACTS)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-                builder.setMessage(R.string.permission_explanation)
-                        .setTitle(R.string.permission_explanation_title)
-                        .create()
-                ActivityCompat.requestPermissions(this,
-                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                        0);
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                        0);
-            }
-        }
     }
 
     public override fun onStart() {
@@ -124,6 +101,13 @@ class MainActivity : AppCompatActivity() {
         mReceivedAction = mReceivedIntent!!.action
         val pasteContentEditText = findViewById(R.id.paste_content_edittext) as EditText
         if (mReceivedAction == Intent.ACTION_VIEW || mReceivedAction == Intent.ACTION_EDIT) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.READ_CONTACTS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                        0);
+            }
             val receivingText = resources.getString(R.string.file_load)
             //Prepare the dialog for loading a file
             val pDialogFileLoad = ProgressDialog(this@MainActivity)
