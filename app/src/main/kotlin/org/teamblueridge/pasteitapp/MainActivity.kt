@@ -24,7 +24,14 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.Spinner
+import android.widget.Toast
+import kotlinx.android.synthetic.fragment_paste.language_spinner
+import kotlinx.android.synthetic.fragment_paste.paste_content_edittext
+import kotlinx.android.synthetic.fragment_paste.paste_name_edittext
+import kotlinx.android.synthetic.fragment_paste.paste_url_label
 import org.teamblueridge.utils.NetworkUtil
 import org.teamblueridge.utils.SysBarTintManager
 import java.io.*
@@ -51,7 +58,9 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         // Set-up the paste fragment and give it a name so we can track it
         if (savedInstanceState == null) {
-            fragmentManager.beginTransaction().add(R.id.container, PasteFragment(), "PasteFragment").commit()
+            fragmentManager.beginTransaction()
+                    .add(R.id.container, PasteFragment(), "PasteFragment")
+                    .commit()
         }
 
         // Set-up up navigation
@@ -74,7 +83,8 @@ class MainActivity : AppCompatActivity() {
         })
 
         // Set up the status bar tint using the CarbonROM SysBarTintManager
-        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) and (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT)) {
+        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+                && (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT)) {
             SysBarTintManager.setupTranslucency(this, true, false)
             val mTintManager = SysBarTintManager(this)
             mTintManager.isStatusBarTintEnabled = true
@@ -87,12 +97,6 @@ class MainActivity : AppCompatActivity() {
             window.statusBarColor = ContextCompat.getColor(this, R.color.blue_700)
         }
 
-        /*if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
-                PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
-        }*/
-
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_CONTACTS)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -101,15 +105,15 @@ class MainActivity : AppCompatActivity() {
                     Manifest.permission.READ_EXTERNAL_STORAGE)) {
                 val builder: AlertDialog.Builder = AlertDialog.Builder(this)
                 builder.setMessage(R.string.permission_explanation)
-                        .setTitle(R.string.permission_explanation_title);
-                var dialog: AlertDialog = builder.create()
+                        .setTitle(R.string.permission_explanation_title)
+                        .create()
                 ActivityCompat.requestPermissions(this,
                         arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
                         0);
             } else {
                 ActivityCompat.requestPermissions(this,
                         arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                0);
+                        0);
             }
         }
     }
@@ -184,10 +188,10 @@ class MainActivity : AppCompatActivity() {
      * Does some preparation before finally calling the UploadPaste ASyncTask
      */
     fun doPaste() {
-        val pasteNameEditText = findViewById(R.id.paste_name_edittext) as EditText
-        val pasteContentEditText = findViewById(R.id.paste_content_edittext) as EditText
+        val pasteNameEditText = paste_name_edittext
+        val pasteContentEditText = paste_content_edittext
         val pasteContentString = pasteContentEditText.text.toString()
-        val languageSpinner = findViewById(R.id.language_spinner) as Spinner
+        val languageSpinner = language_spinner
         val languageSelected = languageSpinner.selectedItemPosition
         val apiHandler = ApiHandler()
         val mToastText: String
@@ -254,7 +258,7 @@ class MainActivity : AppCompatActivity() {
                 val reader = BufferedReader(InputStreamReader(
                         inputStream))
                 val stringBuilder = StringBuilder()
-                reader.forEachLine {stringBuilder.append(it + "\n")}
+                reader.forEachLine { stringBuilder.append(it + "\n") }
                 inputStream!!.close()
                 mFileContents = stringBuilder.toString()
             } catch (e: IOException) {
@@ -293,10 +297,10 @@ class MainActivity : AppCompatActivity() {
     internal inner class UploadPaste : AsyncTask<String, String, String>() {
         val HTTP_USER_AGENT = "Paste It v" + getString(R.string.version_name) + ", an Android app for pasting to Stikked " + "(https://play.google.com/store/apps/details?id=org.teamblueridge.pasteitapp)"
         var prefs = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
-        var pasteUrlLabel = findViewById(R.id.paste_url_label) as TextView
-        var pasteNameEditText = findViewById(R.id.paste_name_edittext) as EditText
+        var pasteUrlLabel = paste_url_label
+        var pasteNameEditText = paste_name_edittext
         var pasteNameString = pasteNameEditText.text.toString()
-        var pasteContentEditText = findViewById(R.id.paste_content_edittext) as EditText
+        var pasteContentEditText = paste_content_edittext
         var pasteContentString = pasteContentEditText.text.toString()
 
         override fun onPreExecute() {
@@ -358,7 +362,7 @@ class MainActivity : AppCompatActivity() {
                 //Get the URL of the paste
                 val stringbuilder = StringBuilder()
                 val urlReader = BufferedReader(InputStreamReader(urlConnection.inputStream))
-                urlReader.forEachLine {stringbuilder.append(it)}
+                urlReader.forEachLine { stringbuilder.append(it) }
                 mPasteUrlString = stringbuilder.toString()
             } catch (e: IOException) {
                 Log.e(TAG, e.toString())

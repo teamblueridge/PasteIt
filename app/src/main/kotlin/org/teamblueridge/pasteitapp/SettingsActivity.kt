@@ -39,7 +39,7 @@ class SettingsActivity : AppCompatActivity() {
         // Display the fragment as the main content.
         if (savedInstanceState == null) {
             fragmentManager.beginTransaction()
-                    .replace(R.id.container, SettingsFragment(),"SettingsFragment")
+                    .replace(R.id.container, SettingsFragment(), "SettingsFragment")
                     .addToBackStack("SettingsFragment")
                     .commit()
         }
