@@ -1,6 +1,11 @@
 Paste It by Team BlueRidge
 ==
-Paste It allows users to paste any text to a webserver running [Stikked](https://github.com/claudehohl/Stikked), an open-source pastebin. By default, Paste It pastes to Team BlueRidge's paste server, paste.teamblueridge.org.
+Paste It allows users to upload any text to a web server running
+[Stikked](https://github.com/claudehohl/Stikked), an open-source "An advanced
+and beautiful pastebin written in PHP". By default, Paste It uploads to Team
+BlueRidge's [paste server](https://paste.teamblueridge.org).
+
+We are taking advantage of JetBrains' Kotlin for Paste It as of version 6.0.0.
 
 Users can specify:
 * A title
@@ -11,4 +16,4 @@ Users can specify:
 
 Known Issues
 ====
-To see all open issues, please visit the Team BlueRidge Projects [issue tracker](https://projects.teamblueridge.org/projects/app-paste/issues?utf8=✓&set_filter=1&f%5B%5D=status_id&op%5Bstatus_id%5D=o&f%5B%5D=&c%5B%5D=tracker&c%5B%5D=updated_on&c%5B%5D=priority&c%5B%5D=author&c%5B%5D=subject&c%5B%5D=status) for this project.
+To see all open issues, please visit the Team BlueRidge Projects [issue tracker](https://jira.teamblueridge.org/projects/PASTE/issues) for this project.
