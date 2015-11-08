@@ -25,7 +25,6 @@ import android.view.MenuItem
 import android.view.WindowManager
 import android.widget.ArrayAdapter
 import android.widget.EditText
-import android.widget.Spinner
 import android.widget.Toast
 import kotlinx.android.synthetic.fragment_paste.*
 import org.teamblueridge.utils.NetworkUtil
@@ -50,7 +49,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         //We're using the toolbar from AppCompat as our actionbar
         val toolbar = findViewById(R.id.toolbar) as Toolbar
-
         setSupportActionBar(toolbar)
         // Set-up the paste fragment and give it a name so we can track it
         if (savedInstanceState == null) {
@@ -99,7 +97,7 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         mReceivedIntent = intent
         mReceivedAction = mReceivedIntent!!.action
-        val pasteContentEditText = findViewById(R.id.paste_content_edittext) as EditText
+        val pasteContentEditText = paste_content_edittext
         if (mReceivedAction == Intent.ACTION_VIEW || mReceivedAction == Intent.ACTION_EDIT) {
             if (ContextCompat.checkSelfPermission(this,
                     Manifest.permission.READ_CONTACTS)
@@ -263,7 +261,7 @@ class MainActivity : AppCompatActivity() {
                 override fun run() {
                     //Create a clickable link from pasteUrlString for user (opens in web browser)
                     val pasteContentEditText: EditText
-                    pasteContentEditText = findViewById(R.id.paste_content_edittext) as EditText
+                    pasteContentEditText = paste_content_edittext
                     pasteContentEditText.setText(mFileContents)
                 }
             })
@@ -403,12 +401,11 @@ class MainActivity : AppCompatActivity() {
                     val uglyList = ArrayAdapter(applicationContext, R.layout.spinner_item,
                             apiHandler.getLanguageArray(applicationContext, "ugly"))
                     try {
-                        val spinner = findViewById(R.id.language_spinner) as Spinner
                         val adapter = ArrayAdapter(applicationContext,
                                 R.layout.spinner_item, langListPretty)
                         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
-                        spinner.adapter = adapter
-                        spinner.setSelection(uglyList.getPosition(positionListPref))
+                        language_spinner.adapter = adapter
+                        language_spinner.setSelection(uglyList.getPosition(positionListPref))
                     } catch (e: NullPointerException) {
                         Log.e(TAG, e.toString())
                     }
