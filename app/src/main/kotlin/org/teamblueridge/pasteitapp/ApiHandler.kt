@@ -31,11 +31,9 @@ class ApiHandler {
      */
     fun getLanguageArray(context: Context, mPrettyUgly: String): Array<String>? {
         try {
-            val fis: FileInputStream
             val langListUgly = ArrayList<String>()
             val langListPretty = ArrayList<String>()
-            fis = context.openFileInput("languages")
-            val reader = JsonReader(InputStreamReader(fis, "UTF-8"))
+            val reader = JsonReader(InputStreamReader(context.openFileInput("languages"), "UTF-8"))
             reader.beginObject()
             while (reader.hasNext()) {
                 langListUgly.add(reader.nextName())
@@ -47,37 +45,29 @@ class ApiHandler {
             val languageListPrettyStringArray =
                     langListPretty.toArray<String>(arrayOfNulls<String>(langListPretty.size))
             reader.close()
-            when (mPrettyUgly) {
-                "pretty" -> return languageListPrettyStringArray
-                "ugly" -> return languageListUglyStringArray
+
+            return when (mPrettyUgly) {
+                "pretty" -> languageListPrettyStringArray
+                "ugly" -> languageListUglyStringArray
                 else -> {
                     Log.e(TAG, "Unexpected array description")
-                    return null
+                    null
                 }
             }
-
         } catch (e: IOException) {
             Log.e(TAG, e.toString())
             return null
         }
-
     }
 
     /**
      * Does some preparation before calling the GetLanguages ASyncTask.
      *
-     * @param sharedPreferences The shared preferences to be used for determining the domains, etc.
+     * @param sharedPrefs The shared preferences to be used for determining the domains, etc.
      */
-    fun getLanguagesAvailable(sharedPreferences: SharedPreferences, context: Context) {
-
-        val languageUrl: String
-        val filename = "languages"
-
-        val upDownPrep = UploadDownloadUrlPrep()
-        languageUrl = upDownPrep.prepUrl(sharedPreferences, "downLangs")
-        val getLanguages = GetLanguages(context as Activity)
-        getLanguages.execute(languageUrl, filename, context)
-
+    fun getLanguagesAvailable(sharedPrefs: SharedPreferences, context: Context) {
+        GetLanguages(context as Activity).execute(UploadDownloadUrlPrep()
+                .prepUrl(sharedPrefs, "downLangs"), "languages", context)
     }
 
     /**
@@ -85,12 +75,20 @@ class ApiHandler {
      * can be read later
      */
     inner class GetLanguages(private val activity: Activity) : AsyncTask<Any, String, Boolean>() {
-
+        /**
+         * Read the languages from the server to a file
+         *
+         * @param params Two Strings: languageUrl and filename; One Context: context
+         * <p>languageUrl: URL the languages can be fetched from
+         * <br />filename: The name of the file to be written to
+         * <br />context: The current context used for writing the file
+         * @return True if the downloaded JSON is valid, false otherwise
+         */
         override fun doInBackground(vararg params: Any): Boolean {
-            var languageUrl = params[0] as String
-            var filename = params[1] as String
-            var context = params[2] as Context
-            var languageList = NetworkUtil.readFromUrl(languageUrl)
+            val languageUrl = params[0] as String
+            val filename = params[1] as String
+            val context = params[2] as Context
+            val languageList = NetworkUtil.readFromUrl(languageUrl)
             try {
                 context.openFileOutput(filename, Context.MODE_PRIVATE).use {
                     if (languageList.length > 0) {
@@ -106,35 +104,34 @@ class ApiHandler {
                 e.printStackTrace()
                 return false
             }
-
         }
 
+        /**
+         * Display an alert dialog if there is a problem with the JSON file
+         *
+         * @param valid True if the downloaded JSON is valid, false otherwise
+         */
         public override fun onPostExecute(valid: Boolean) {
             if (!valid) {
-                activity.runOnUiThread(object : Runnable {
-                    override fun run() {
-
-                        val builder1 = AlertDialog.Builder(activity)
-                        builder1.setMessage("Your API key is incorrect. Please fix it in settings."
-                                + " The only language available for uploads is Plain Text")
-                        builder1.setCancelable(true)
-                        builder1.setNeutralButton(android.R.string.ok,
-                                object : DialogInterface.OnClickListener {
-                                    override fun onClick(dialog: DialogInterface, id: Int) {
-                                        dialog.cancel()
-                                    }
-                                })
-
-                        val alert11 = builder1.create()
-                        alert11.show()
-                    }
-                })
+                activity.runOnUiThread {
+                    val builder1 = AlertDialog.Builder(activity)
+                    builder1.setMessage("Your API key is incorrect. Please fix it in settings."
+                            + " The only language available for uploads is Plain Text")
+                    builder1.setCancelable(true)
+                    builder1.setNeutralButton(android.R.string.ok,
+                            object : DialogInterface.OnClickListener {
+                                override fun onClick(dialog: DialogInterface, id: Int) {
+                                    dialog.cancel()
+                                }
+                            })
+                    val alert11 = builder1.create()
+                    alert11.show()
+                }
             }
         }
     }
 
     companion object {
-
         private val TAG = "TeamBlueRidge"
     }
 }

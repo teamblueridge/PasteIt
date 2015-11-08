@@ -71,6 +71,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.google.android.gms:play-services:8.1.0'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile 'com.pawegio.kandroid:kandroid:0.3.1@aar'
+
 }
 buildscript {
     ext.kotlin_version = '1.0.0-beta-1103'
@@ -84,4 +86,5 @@ buildscript {
 }
 repositories {
     mavenCentral()
+    jcenter()
 }

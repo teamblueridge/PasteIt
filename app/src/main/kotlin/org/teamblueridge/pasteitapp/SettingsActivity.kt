@@ -4,20 +4,21 @@ import android.os.Build
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
 import android.view.WindowManager
 import org.teamblueridge.utils.SysBarTintManager
 
+import kotlinx.android.synthetic.activity_main.*
+
 class SettingsActivity : AppCompatActivity() {
-    //private static final String TAG = "TeamBlueRidge";
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(R.id.toolbar) as Toolbar)
+        setSupportActionBar(toolbar)
 
         // Set up the status bar tint using the CarbonROM SysBarTintManager
-        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) and (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT)) {
+        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) &&
+                (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT)) {
             SysBarTintManager.setupTranslucency(this, true, false)
             val mTintManager = SysBarTintManager(this)
             mTintManager.isStatusBarTintEnabled = true
@@ -31,10 +32,8 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         // Set-up up navigation
-        if (supportActionBar != null) {
-            supportActionBar!!.setHomeButtonEnabled(true)
-            supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        }
+        supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // Display the fragment as the main content.
         if (savedInstanceState == null) {

@@ -17,8 +17,8 @@ class UploadDownloadUrlPrep {
      * or a list of languages the server supports (JSON) for syntax highlighting
      *
      * @param prefs  The preferences to be able to access the domain, API key, etc.
-     * @param upDown "upCreate" for creating a new paste<p>
-     *               "downLangs" for getting languages<p>
+     * @param upDown "upCreate" for creating a new paste<br />
+     *               "downLangs" for getting languages<br />
      *               "downRecents" for recent pasts
      * @return The URL to be used, with the API key if necessary
      */
@@ -29,11 +29,10 @@ class UploadDownloadUrlPrep {
         val CREATE_WITH_APIKEY = "/api/create?apikey="
         val RECENT_WITH_APIKEY = "/api/recent?apikey="
 
-        // Ensure that the paste URL is set, if not, default to Team BlueRidge
-        var mPasteDomain: String
-        var mLangDownloadUrl: String
-        var mRecentDownloadUrl: String
-        var mUploadUrl: String
+        val mPasteDomain: String
+        val mLangDownloadUrl: String
+        val mRecentDownloadUrl: String
+        val mUploadUrl: String
 
         if (prefs.getString("pref_domain", "").length != 0)
             mPasteDomain = prefs.getString("pref_domain", "")
@@ -45,26 +44,24 @@ class UploadDownloadUrlPrep {
             mUploadUrl = mPasteDomain + CREATE_WITH_APIKEY + TEAMBLUERIDGE_APIKEY
             mLangDownloadUrl = mPasteDomain + LANGS_WITH_APIKEY + TEAMBLUERIDGE_APIKEY
             mRecentDownloadUrl = mPasteDomain + RECENT_WITH_APIKEY + TEAMBLUERIDGE_APIKEY
+        } else if (prefs.getString("pref_api_key", "").length != 0) {
+            val mPasteApiKey = prefs.getString("pref_api_key", "")
+            mUploadUrl = mPasteDomain + CREATE_WITH_APIKEY + mPasteApiKey
+            mLangDownloadUrl = mPasteDomain + LANGS_WITH_APIKEY + mPasteApiKey
+            mRecentDownloadUrl = mPasteDomain + RECENT_WITH_APIKEY + mPasteApiKey
         } else {
-            if (prefs.getString("pref_api_key", "").length != 0) {
-                var mPasteApiKey = prefs.getString("pref_api_key", "")
-                mUploadUrl = mPasteDomain + CREATE_WITH_APIKEY + mPasteApiKey
-                mLangDownloadUrl = mPasteDomain + LANGS_WITH_APIKEY + mPasteApiKey
-                mRecentDownloadUrl = mPasteDomain + RECENT_WITH_APIKEY + mPasteApiKey
-            } else {
-                mUploadUrl = mPasteDomain + "/api/create"
-                mLangDownloadUrl = mPasteDomain + "/api/langs"
-                mRecentDownloadUrl = mPasteDomain + "/api/recent"
-            }
+            mUploadUrl = mPasteDomain + "/api/create"
+            mLangDownloadUrl = mPasteDomain + "/api/langs"
+            mRecentDownloadUrl = mPasteDomain + "/api/recent"
         }
 
-        when (upDown) {
-            "upCreate" -> return mUploadUrl
-            "downLangs" -> return mLangDownloadUrl
-            "downRecent" -> return mRecentDownloadUrl
+        return when (upDown) {
+            "upCreate" -> mUploadUrl
+            "downLangs" -> mLangDownloadUrl
+            "downRecent" -> mRecentDownloadUrl
             else -> {
                 Log.e(TAG, "Unknown URL case")
-                return ""
+                ""
             }
         }
     }
