@@ -8,11 +8,11 @@ import android.os.AsyncTask
 import android.support.v7.app.AlertDialog
 import android.util.JsonReader
 import android.util.Log
-
+import org.teamblueridge.utils.NetworkUtil
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStreamReader
-import java.util.ArrayList
+import java.util.*
 
 /**
  * Communicates with the Stikked API to get the data necessary

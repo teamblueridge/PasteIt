@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.view.Window
 import android.view.WindowManager
+import org.teamblueridge.utils.SysBarTintManager
 
 class SettingsActivity : AppCompatActivity() {
     //private static final String TAG = "TeamBlueRidge";
