@@ -279,7 +279,8 @@ class MainActivity : AppCompatActivity() {
      * onPostExecute : Close the dialog box and update the paste url label
      */
     internal inner class UploadPaste : AsyncTask<String, String, String>() {
-        val HTTP_USER_AGENT = "Paste It v" + getString(R.string.version_name) + ", an Android app for pasting to Stikked " + "(https://play.google.com/store/apps/details?id=org.teamblueridge.pasteitapp)"
+        var HTTP_USER_AGENT = "Paste It v${getString(R.string.version_name)}, an Android app for pasting to Stikked "
+           .concat("(https://play.google.com/store/apps/details?id=org.teamblueridge.pasteitapp)")
         var prefs = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
         var pasteUrlLabel = paste_url_label
         var pasteNameEditText = paste_name_edittext
