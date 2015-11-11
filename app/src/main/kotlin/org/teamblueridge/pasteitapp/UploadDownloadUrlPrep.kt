@@ -34,7 +34,7 @@ class UploadDownloadUrlPrep {
         val mRecentDownloadUrl: String
         val mUploadUrl: String
 
-        if (prefs.getString("pref_domain", "").length != 0)
+        if (!prefs.getString("pref_domain", "").isEmpty())
             mPasteDomain = prefs.getString("pref_domain", "")
         else
             mPasteDomain = "https://paste.teamblueridge.org"
@@ -44,7 +44,7 @@ class UploadDownloadUrlPrep {
             mUploadUrl = mPasteDomain + CREATE_WITH_APIKEY + TEAMBLUERIDGE_APIKEY
             mLangDownloadUrl = mPasteDomain + LANGS_WITH_APIKEY + TEAMBLUERIDGE_APIKEY
             mRecentDownloadUrl = mPasteDomain + RECENT_WITH_APIKEY + TEAMBLUERIDGE_APIKEY
-        } else if (prefs.getString("pref_api_key", "").length != 0) {
+        } else if (!prefs.getString("pref_api_key", "").isEmpty()) {
             val mPasteApiKey = prefs.getString("pref_api_key", "")
             mUploadUrl = mPasteDomain + CREATE_WITH_APIKEY + mPasteApiKey
             mLangDownloadUrl = mPasteDomain + LANGS_WITH_APIKEY + mPasteApiKey
