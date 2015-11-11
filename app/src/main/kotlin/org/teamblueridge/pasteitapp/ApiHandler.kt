@@ -115,8 +115,7 @@ class ApiHandler {
             if (!valid) {
                 activity.runOnUiThread {
                     val builder1 = AlertDialog.Builder(activity)
-                    builder1.setMessage("Your API key is incorrect. Please fix it in settings."
-                            + " The only language available for uploads is Plain Text")
+                    builder1.setMessage(activity.resources.getString(R.string.error_api_key))
                     builder1.setCancelable(true)
                     builder1.setNeutralButton(android.R.string.ok,
                             object : DialogInterface.OnClickListener {

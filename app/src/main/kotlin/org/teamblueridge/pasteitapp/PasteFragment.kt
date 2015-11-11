@@ -11,8 +11,6 @@ import android.view.ViewGroup
  */
 class PasteFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        (activity as MainActivity) setActionBarTitle(getString(R.string.app_name))
-        return inflater.inflate(R.layout.fragment_paste, container, false)
-    }
+                              savedInstanceState: Bundle?): View? =
+            inflater.inflate(R.layout.fragment_paste, container, false)
 }

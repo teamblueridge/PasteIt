@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity() {
                 == PackageManager.PERMISSION_GRANTED) {
                 loadFile()
             } else {
-                toast("Please accept the permission to open files.")
+                toast(getString(R.string.request_permissions))
                 ActivityCompat.requestPermissions(this,
                         arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
                 loadFile()
@@ -155,17 +155,17 @@ class MainActivity : AppCompatActivity() {
             if (NetworkUtil.isConnectedToNetwork(this)) {
                 if (language != "0") {
                     doPaste(language)
-                    mToastText = resources.getString(R.string.paste_toast)
+                    mToastText = getString(R.string.paste_toast)
                     paste_name_edittext.setText("")
                     paste_content_edittext.setText("")
                 } else {
-                    mToastText = resources.getString(R.string.invalid_language)
+                    mToastText = getString(R.string.invalid_language)
                 }
             } else {
-                mToastText = resources.getString(R.string.no_network)
+                mToastText = getString(R.string.no_network)
             }
         } else {
-            mToastText = resources.getString(R.string.paste_no_text)
+            mToastText = getString(R.string.paste_no_text)
         }
         toast(mToastText)
     }
@@ -180,6 +180,7 @@ class MainActivity : AppCompatActivity() {
         val title = paste_name_edittext.text.toString()
         val text = paste_content_edittext.text.toString()
         val mUserName: String
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
         //Ensure username is set, if not, default to "mobile user"
         if (!prefs.getString("pref_name", "")!!.isEmpty()) {
@@ -223,11 +224,8 @@ class MainActivity : AppCompatActivity() {
 
                 val pasteUrl = urlStringBuilder.toString()
                 pDialogUpload.dismiss()
-                val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                val clip = ClipData.newPlainText("PasteIt", pasteUrl)
-                clipboard.primaryClip = clip
                 if (Patterns.WEB_URL.matcher(pasteUrl).matches())
-                    clipboard.primaryClip = clip
+                    clipboard.primaryClip = ClipData.newPlainText("PasteIt", pasteUrl)
 
                 runOnUiThread {
                     if (Patterns.WEB_URL.matcher(pasteUrl).matches()) {
@@ -243,16 +241,6 @@ class MainActivity : AppCompatActivity() {
                 pDialogUpload.dismiss()
             }
         }
-    }
-
-    /**
-     * Sets the title of the ActionBar to be whatever is specified. Called from the various
-     * fragments and other activities
-     *
-     * @param title The title to be used for the ActionBar
-     */
-    fun setActionBarTitle(title: String) {
-        supportActionBar?.title = title
     }
 
     /**
