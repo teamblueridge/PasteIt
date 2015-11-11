@@ -21,18 +21,10 @@ public class NetworkUtil {
      * @return <code>true</code> if connected to WiFi or a mobile network
      */
     public static boolean isConnectedToNetwork(Context context) {
-        final NetworkInfo[] allNetworkInfo = ((ConnectivityManager) context
-                .getSystemService(Context.CONNECTIVITY_SERVICE))
-                .getAllNetworkInfo();
-        NetworkInfo currNetworkInfo;
-        boolean anythingConnected = false;
-        for (NetworkInfo element : allNetworkInfo) {
-            currNetworkInfo = element;
-            if (currNetworkInfo.getState() == NetworkInfo.State.CONNECTED) {
-                anythingConnected = true;
-            }
-        }
-        return anythingConnected;
+        final ConnectivityManager connectivityManager = ((ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE));
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
     }
 
     /**
