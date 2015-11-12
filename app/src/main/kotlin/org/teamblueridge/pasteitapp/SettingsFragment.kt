@@ -63,7 +63,7 @@ class SettingsFragment : PreferenceFragment(), SharedPreferences.OnSharedPrefere
      */
     fun updateApiPreferenceSummary(key: String) {
         val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
-        if (!prefs.getString(key, "")!!.isEmpty())
+        if (!prefs.getString(key, "").isEmpty())
             findPreference(key).summary = getString(R.string.pref_api_key_summary,
                     prefs.getString(key, ""))
         else

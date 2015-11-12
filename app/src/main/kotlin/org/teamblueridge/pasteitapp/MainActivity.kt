@@ -90,11 +90,11 @@ class MainActivity : AppCompatActivity() {
         if (mReceivedAction == Intent.ACTION_VIEW || mReceivedAction == Intent.ACTION_EDIT) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
+                ActivityCompat
+                        .requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
             }
-            if (ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
                 loadFile()
             } else {
                 toast(getString(R.string.request_permissions))
@@ -183,11 +183,10 @@ class MainActivity : AppCompatActivity() {
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
         //Ensure username is set, if not, default to "mobile user"
-        if (!prefs.getString("pref_name", "")!!.isEmpty()) {
+        if (!prefs.getString("pref_name", "")!!.isEmpty())
             mUserName = prefs.getString("pref_name", "")
-        } else {
+        else
             mUserName = "Mobile User " + getString(R.string.version_name)
-        }
 
         val url = URL(UploadDownloadUrlPrep().prepUrl(prefs, "upCreate"))
         val urlConnection = url.openConnection() as HttpURLConnection
@@ -246,7 +245,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Load the file being opened and put it into the paste content EditText
      */
-    fun loadFile () {
+    fun loadFile() {
         val pDialogFileLoad = ProgressDialog(this@MainActivity)
         pDialogFileLoad.setMessage(getString(R.string.file_load))
         pDialogFileLoad.isIndeterminate = true
@@ -267,11 +266,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
         pDialogFileLoad.dismiss()
-
     }
 
-    fun populateSpinner()
-    {
+    fun populateSpinner() {
         runAsync {
             val langListPretty = ApiHandler().getLanguageArray(applicationContext, "pretty")
             runOnUiThread {
@@ -290,7 +287,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
     }
 
 }
