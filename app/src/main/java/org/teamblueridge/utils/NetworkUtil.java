@@ -17,6 +17,8 @@ public class NetworkUtil {
     private static final String TAG = NetworkUtil.class.getName();
 
     /**
+     * Checks whether the device currently has an active network connection
+     *
      * @param context the Context
      * @return <code>true</code> if connected to WiFi or a mobile network
      */
@@ -34,7 +36,7 @@ public class NetworkUtil {
      * @return contents of file
      */
     public static String readFromUrl(String url) {
-        StringBuilder manifest = new StringBuilder();
+        StringBuilder fetchedApi = new StringBuilder();
         InputStream is;
         try {
             is = new URL(url).openStream();
@@ -42,12 +44,12 @@ public class NetworkUtil {
                     new InputStreamReader(is, Charset.forName("UTF-8")));
             int cp;
             while ((cp = rd.read()) != -1) {
-                manifest.append((char) cp);
+                fetchedApi.append((char) cp);
             }
             is.close();
         } catch (IOException e1) {
             Log.d(TAG, "Failed reading url " + url, e1);
         }
-        return manifest.toString();
+        return fetchedApi.toString();
     }
 }
