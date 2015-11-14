@@ -179,8 +179,8 @@ class MainActivity : AppCompatActivity() {
         val language = if (!receivedLanguage.isEmpty()) receivedLanguage else "text"
         val title = paste_name_edittext.text.toString()
         val text = paste_content_edittext.text.toString()
-        val mUserName: String
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val mUserName: String
 
         //Ensure username is set, if not, default to "mobile user"
         if (!prefs.getString("pref_name", "")!!.isEmpty())
@@ -196,48 +196,43 @@ class MainActivity : AppCompatActivity() {
         pDialogUpload.setCancelable(false)
         pDialogUpload.show()
         runAsync {
-            try {
-                // HTTP Header data
-                urlConnection.requestMethod = "POST"
-                urlConnection.doInput = true
-                urlConnection.doOutput = true
-                urlConnection.setRequestProperty("User-Agent", httpUserAgent)
-                val builder = Uri.Builder()
-                        .appendQueryParameter("title", title)
-                        .appendQueryParameter("text", text)
-                        .appendQueryParameter("name", mUserName)
-                        .appendQueryParameter("lang", language)
-                val query = builder.build().encodedQuery
-                val os = urlConnection.outputStream
-                val writer = BufferedWriter(OutputStreamWriter(os, "UTF-8"))
-                writer.write(query)
-                writer.flush()
-                writer.close()
-                os.close()
-                urlConnection.connect()
+            // HTTP Header data
+            urlConnection.requestMethod = "POST"
+            urlConnection.doInput = true
+            urlConnection.doOutput = true
+            urlConnection.setRequestProperty("User-Agent", httpUserAgent)
+            val builder = Uri.Builder()
+                    .appendQueryParameter("title", title)
+                    .appendQueryParameter("text", text)
+                    .appendQueryParameter("name", mUserName)
+                    .appendQueryParameter("lang", language)
+            val query = builder.build().encodedQuery
+            val os = urlConnection.outputStream
+            val writer = BufferedWriter(OutputStreamWriter(os, "UTF-8"))
+            writer.write(query)
+            writer.flush()
+            writer.close()
+            os.close()
+            urlConnection.connect()
 
-                //Get the URL of the paste
-                val urlStringBuilder = StringBuilder()
-                BufferedReader(InputStreamReader(urlConnection.inputStream))
-                        .forEachLine { urlStringBuilder.append(it) }
+            //Get the URL of the paste
+            val urlStringBuilder = StringBuilder()
+            BufferedReader(InputStreamReader(urlConnection.inputStream))
+                    .forEachLine { urlStringBuilder.append(it) }
 
-                val pasteUrl = urlStringBuilder.toString()
-                pDialogUpload.dismiss()
-                if (Patterns.WEB_URL.matcher(pasteUrl).matches())
-                    clipboard.primaryClip = ClipData.newPlainText("PasteIt", pasteUrl)
+            val pasteUrl = urlStringBuilder.toString()
+            pDialogUpload.dismiss()
+            if (Patterns.WEB_URL.matcher(pasteUrl).matches())
+                clipboard.primaryClip = ClipData.newPlainText("PasteIt", pasteUrl)
 
-                runOnUiThread {
-                    if (Patterns.WEB_URL.matcher(pasteUrl).matches()) {
-                        paste_url_label.text = Html.fromHtml("<a href=\"$pasteUrl\">$pasteUrl</a>")
-                        paste_url_label.movementMethod = LinkMovementMethod.getInstance()
-                    } else {
-                        Log.e(TAG, "Bad URL: URL received was $pasteUrl")
-                        paste_url_label.text = getString(R.string.invalid_url)
-                    }
+            runOnUiThread {
+                if (Patterns.WEB_URL.matcher(pasteUrl).matches()) {
+                    paste_url_label.text = Html.fromHtml("<a href=\"$pasteUrl\">$pasteUrl</a>")
+                    paste_url_label.movementMethod = LinkMovementMethod.getInstance()
+                } else {
+                    Log.e(TAG, "Bad URL: URL received was $pasteUrl")
+                    paste_url_label.text = getString(R.string.invalid_url)
                 }
-            } catch (e: IOException) {
-                Log.e(TAG, e.toString())
-                pDialogUpload.dismiss()
             }
         }
     }
@@ -252,18 +247,14 @@ class MainActivity : AppCompatActivity() {
         pDialogFileLoad.setCancelable(false)
         pDialogFileLoad.show()
         runAsync {
-            try {
-                mReceivedAction = intent.action
-                val receivedText = mReceivedIntent!!.data
-                val inputStream = contentResolver.openInputStream(receivedText)
-                val reader = BufferedReader(InputStreamReader(inputStream))
-                val stringBuilder = StringBuilder()
-                reader.forEachLine { stringBuilder.append(it + "\n") }
-                inputStream!!.close()
-                runOnUiThread { paste_content_edittext.setText(stringBuilder.toString()) }
-            } catch (e: IOException) {
-                Log.e(TAG, e.toString())
-            }
+            mReceivedAction = intent.action
+            val receivedText = mReceivedIntent!!.data
+            val inputStream = contentResolver.openInputStream(receivedText)
+            val reader = BufferedReader(InputStreamReader(inputStream))
+            val stringBuilder = StringBuilder()
+            reader.forEachLine { stringBuilder.append(it + "\n") }
+            inputStream.close()
+            runOnUiThread { paste_content_edittext.setText(stringBuilder.toString()) }
         }
         pDialogFileLoad.dismiss()
     }
@@ -276,15 +267,11 @@ class MainActivity : AppCompatActivity() {
                 val positionListPref = prefs.getString("pref_default_language", "-1")
                 val uglyList = ArrayAdapter(applicationContext, R.layout.spinner_item,
                         ApiHandler().getLanguageArray(applicationContext, "ugly"))
-                try {
-                    val adapter = ArrayAdapter(applicationContext,
-                            R.layout.spinner_item, langListPretty)
-                    adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
-                    language_spinner.adapter = adapter
-                    language_spinner.setSelection(uglyList.getPosition(positionListPref))
-                } catch (e: NullPointerException) {
-                    Log.e(TAG, e.toString())
-                }
+                val adapter = ArrayAdapter(applicationContext,
+                        R.layout.spinner_item, langListPretty)
+                adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
+                language_spinner.adapter = adapter
+                language_spinner.setSelection(uglyList.getPosition(positionListPref))
             }
         }
     }

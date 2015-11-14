@@ -30,33 +30,28 @@ class ApiHandler {
      * @return a Array<String>, either pretty or ugly, depending on what is needed
      */
     fun getLanguageArray(context: Context, mPrettyUgly: String): Array<String>? {
-        try {
-            val langListUgly = ArrayList<String>()
-            val langListPretty = ArrayList<String>()
-            val reader = JsonReader(InputStreamReader(context.openFileInput("languages"), "UTF-8"))
-            reader.beginObject()
-            while (reader.hasNext()) {
-                langListUgly.add(reader.nextName())
-                langListPretty.add(reader.nextString())
-            }
-            reader.endObject()
-            val languageListUglyStringArray =
-                    langListUgly.toArray<String>(arrayOfNulls<String>(langListUgly.size))
-            val languageListPrettyStringArray =
-                    langListPretty.toArray<String>(arrayOfNulls<String>(langListPretty.size))
-            reader.close()
+        val langListUgly = ArrayList<String>()
+        val langListPretty = ArrayList<String>()
+        val reader = JsonReader(InputStreamReader(context.openFileInput("languages"), "UTF-8"))
+        reader.beginObject()
+        while (reader.hasNext()) {
+            langListUgly.add(reader.nextName())
+            langListPretty.add(reader.nextString())
+        }
+        reader.endObject()
+        val languageListUglyStringArray =
+                langListUgly.toArray<String>(arrayOfNulls<String>(langListUgly.size))
+        val languageListPrettyStringArray =
+                langListPretty.toArray<String>(arrayOfNulls<String>(langListPretty.size))
+        reader.close()
 
-            return when (mPrettyUgly) {
-                "pretty" -> languageListPrettyStringArray
-                "ugly" -> languageListUglyStringArray
-                else -> {
-                    Log.e(TAG, "Unexpected array description")
-                    null
-                }
+        return when (mPrettyUgly) {
+            "pretty" -> languageListPrettyStringArray
+            "ugly" -> languageListUglyStringArray
+            else -> {
+                Log.e(TAG, "Unexpected array description")
+                null
             }
-        } catch (e: IOException) {
-            Log.e(TAG, e.toString())
-            return null
         }
     }
 
@@ -89,20 +84,14 @@ class ApiHandler {
             val filename = params[1] as String
             val context = params[2] as Context
             val languageList = NetworkUtil.readFromUrl(languageUrl)
-            try {
-                context.openFileOutput(filename, Context.MODE_PRIVATE).use {
-                    if (languageList.length > 0) {
-                        it.write(languageList.toByteArray())
-                        return true
-                    } else {
-                        it.write("{\"text\":\"Plain Text\"}".toByteArray())
-                        return false
-                    }
+            context.openFileOutput(filename, Context.MODE_PRIVATE).use {
+                if (languageList.length > 0) {
+                    it.write(languageList.toByteArray())
+                    return true
+                } else {
+                    it.write("{\"text\":\"Plain Text\"}".toByteArray())
+                    return false
                 }
-            } catch (e: IOException) {
-                Log.e(TAG, e.toString())
-                e.printStackTrace()
-                return false
             }
         }
 
