@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-def signingProperties = file('../PasteIt.signing.properties')
 def increaseVersionCode() {
     def versionPropsFile = file('version.properties')
     if (versionPropsFile.canRead()) {
@@ -17,20 +16,8 @@ def increaseVersionCode() {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '23.0.1'
-    if (signingProperties.canRead()) {
-        Properties props = new Properties()
-        props.load(new FileInputStream(file(signingProperties)))
+    buildToolsVersion '23.0.2'
 
-        signingConfigs {
-            release {
-                storeFile file(props['keystore'])
-                storePassword props['keystore.password']
-                keyAlias props['keyAlias']
-                keyPassword props['keyPassword']
-            }
-        }
-    }
     defaultConfig {
         applicationId "org.teamblueridge.pasteitapp"
         minSdkVersion 16
@@ -42,7 +29,6 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
         }
         debug {
             debuggable true
@@ -51,11 +37,9 @@ android {
         }
         beta {
             versionNameSuffix '-beta'
-            signingConfig signingConfigs.release
         }
         alpha {
             versionNameSuffix '-alpha'
-            signingConfig signingConfigs.release
         }
     }
     compileOptions {
@@ -71,7 +55,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile 'com.pawegio.kandroid:kandroid:0.3.1@aar'
-
 }
 buildscript {
     ext.kotlin_version = '1.0.0-beta-1103'
