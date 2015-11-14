@@ -32,8 +32,8 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         // Set-up up navigation
-        supportActionBar?.setHomeButtonEnabled(true)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar.setHomeButtonEnabled(true)
+        supportActionBar.setDisplayHomeAsUpEnabled(true)
 
         // Display the fragment as the main content.
         if (savedInstanceState == null) {

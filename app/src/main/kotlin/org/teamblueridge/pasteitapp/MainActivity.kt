@@ -58,11 +58,11 @@ class MainActivity : AppCompatActivity() {
             /* Check if we have anything on the stack. If we do, we need to have the back button
              * display in in the ActionBar */
             if (fragmentManager.backStackEntryCount > 0) {
-                supportActionBar?.setHomeButtonEnabled(true)
-                supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                supportActionBar.setHomeButtonEnabled(true)
+                supportActionBar.setDisplayHomeAsUpEnabled(true)
             } else {
-                supportActionBar?.setHomeButtonEnabled(false)
-                supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                supportActionBar.setHomeButtonEnabled(false)
+                supportActionBar.setDisplayHomeAsUpEnabled(true)
             }
         }
 
@@ -148,26 +148,24 @@ class MainActivity : AppCompatActivity() {
         val pasteContentString = paste_content_edittext.text.toString()
         val languageSelected = language_spinner.selectedItemPosition
         val languageListStringArray = ApiHandler().getLanguageArray(applicationContext, "ugly")
-        val mToastText: String
 
         val language = languageListStringArray!![languageSelected]
         if (!pasteContentString.isEmpty()) {
             if (NetworkUtil.isConnectedToNetwork(this)) {
                 if (language != "0") {
-                    doPaste(language)
-                    mToastText = getString(R.string.paste_toast)
+                    doPaste(if (!language.isEmpty()) language else "text")
+                    toast(getString(R.string.paste_toast))
                     paste_name_edittext.setText("")
                     paste_content_edittext.setText("")
                 } else {
-                    mToastText = getString(R.string.invalid_language)
+                    toast(getString(R.string.invalid_language))
                 }
             } else {
-                mToastText = getString(R.string.no_network)
+                toast(getString(R.string.no_network))
             }
         } else {
-            mToastText = getString(R.string.paste_no_text)
+            toast(getString(R.string.paste_no_text))
         }
-        toast(mToastText)
     }
 
     fun doPaste(receivedLanguage: String) {
@@ -183,7 +181,7 @@ class MainActivity : AppCompatActivity() {
         val mUserName: String
 
         //Ensure username is set, if not, default to "mobile user"
-        if (!prefs.getString("pref_name", "")!!.isEmpty())
+        if (!prefs.getString("pref_name", "").isEmpty())
             mUserName = prefs.getString("pref_name", "")
         else
             mUserName = "Mobile User " + getString(R.string.version_name)
@@ -260,20 +258,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun populateSpinner() {
-        runAsync {
-            val langListPretty = ApiHandler().getLanguageArray(applicationContext, "pretty")
-            runOnUiThread {
-                val prefs = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
-                val positionListPref = prefs.getString("pref_default_language", "-1")
-                val uglyList = ArrayAdapter(applicationContext, R.layout.spinner_item,
-                        ApiHandler().getLanguageArray(applicationContext, "ugly"))
-                val adapter = ArrayAdapter(applicationContext,
-                        R.layout.spinner_item, langListPretty)
-                adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
-                language_spinner.adapter = adapter
-                language_spinner.setSelection(uglyList.getPosition(positionListPref))
-            }
-        }
+        val langListPretty = ApiHandler().getLanguageArray(applicationContext, "pretty")
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
+        val positionListPref = prefs.getString("pref_default_language", "-1")
+        val uglyList = ArrayAdapter(applicationContext, R.layout.spinner_item,
+                ApiHandler().getLanguageArray(applicationContext, "ugly"))
+        val adapter = ArrayAdapter(applicationContext,
+                R.layout.spinner_item, langListPretty)
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
+        language_spinner.adapter = adapter
+        language_spinner.setSelection(uglyList.getPosition(positionListPref))
     }
 
 }

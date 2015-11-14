@@ -61,8 +61,9 @@ class ApiHandler {
      * @param sharedPrefs The shared preferences to be used for determining the domains, etc.
      */
     fun getLanguagesAvailable(sharedPrefs: SharedPreferences, context: Context) {
-        GetLanguages(context as Activity).execute(UploadDownloadUrlPrep()
-                .prepUrl(sharedPrefs, "downLangs"), "languages", context)
+        GetLanguages(context as Activity).execute(UploadDownloadUrlPrep().prepUrl(sharedPrefs,
+                                                                                  "downLangs"),
+                                                  "languages", context)
     }
 
     /**
