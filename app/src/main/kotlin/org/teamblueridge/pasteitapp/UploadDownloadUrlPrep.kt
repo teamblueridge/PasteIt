@@ -16,10 +16,10 @@ class UploadDownloadUrlPrep {
      * Gets the proper URL for uploading a paste or for downloading a list of recent pastes (JSON)
      * or a list of languages the server supports (JSON) for syntax highlighting
      *
-     * @param prefs  The preferences to be able to access the domain, API key, etc.
-     * @param upDown "upCreate" for creating a new paste<br />
-     *               "downLangs" for getting languages<br />
-     *               "downRecents" for recent pasts
+     * @param prefs   The preferences to be able to access the domain, API key, etc.
+     * @param upDown  "upCreate" for creating a new paste<br />
+     *                "downLangs" for getting languages<br />
+     *                "downRecents" for recent pasts
      * @return The URL to be used, with the API key if necessary
      */
     fun prepUrl(prefs: SharedPreferences, upDown: String): String {

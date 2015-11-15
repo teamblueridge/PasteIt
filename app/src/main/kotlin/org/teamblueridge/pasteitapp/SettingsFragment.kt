@@ -6,10 +6,11 @@ import android.preference.ListPreference
 import android.preference.PreferenceFragment
 import android.preference.PreferenceManager
 
+/**
+ * Provides the listeners to ensure that changes to preferences are handled properly.
+ */
 class SettingsFragment : PreferenceFragment(), SharedPreferences.OnSharedPreferenceChangeListener {
 
-    /* We have a listener that checks for any preference changes, so that we can act on it.
-     * There is a when statement that actually acts on the change */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         addPreferencesFromResource(R.xml.preferences)
@@ -49,6 +50,11 @@ class SettingsFragment : PreferenceFragment(), SharedPreferences.OnSharedPrefere
         }
     }
 
+    /**
+     * Updates the languages available to be selected 
+     *
+     * @param listPreference  The preference to be updated
+     */
     protected fun setListPreferenceData(listPreference: ListPreference) {
         listPreference.entries = ApiHandler().getLanguageArray(activity, "pretty")
         listPreference.setDefaultValue("1")

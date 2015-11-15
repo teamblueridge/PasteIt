@@ -25,8 +25,8 @@ class ApiHandler {
     /**
      * Gets a list of the languages supported by the remote server
      *
-     * @param context     Used in order to be able to read the JSON file
-     * @param mPrettyUgly Used in order to identify which Array<String> to use
+     * @param context  Used in order to be able to read the JSON file
+     * @param mPrettyUgly  Used in order to identify which Array<String> to use
      * @return a Array<String>, either pretty or ugly, depending on what is needed
      */
     fun getLanguageArray(context: Context, mPrettyUgly: String): Array<String>? {
@@ -72,12 +72,12 @@ class ApiHandler {
      */
     inner class GetLanguages(private val activity: Activity) : AsyncTask<Any, String, Boolean>() {
         /**
-         * Read the languages from the server to a file
+         * Reads the languages from the server to a file
          *
-         * @param params Two Strings: languageUrl and filename; One Context: context
-         * <p>languageUrl: URL the languages can be fetched from
-         * <br />filename: The name of the file to be written to
-         * <br />context: The current context used for writing the file
+         * @param params  Two Strings: languageUrl and filename; One Context: context
+         *          <li>languageUrl: URL the languages can be fetched from
+         *          <li>filename: The name of the file to be written to
+         *          <li>context: The current context used for writing the file
          * @return True if the downloaded JSON is valid, false otherwise
          */
         override fun doInBackground(vararg params: Any): Boolean {
@@ -97,9 +97,9 @@ class ApiHandler {
         }
 
         /**
-         * Display an alert dialog if there is a problem with the JSON file
+         * Displays an alert dialog if there is a problem with the JSON file
          *
-         * @param valid True if the downloaded JSON is valid, false otherwise
+         * @param valid  True if the downloaded JSON is valid, false otherwise
          */
         public override fun onPostExecute(valid: Boolean) {
             if (!valid) {
