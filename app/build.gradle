@@ -57,7 +57,7 @@ dependencies {
     compile 'com.pawegio.kandroid:kandroid:0.3.1@aar'
 }
 buildscript {
-    ext.kotlin_version = '1.0.0-beta-1103'
+    ext.kotlin_version = '1.0.0-beta-2423'
     repositories {
         mavenCentral()
     }
