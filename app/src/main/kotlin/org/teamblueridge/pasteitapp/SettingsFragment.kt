@@ -51,7 +51,7 @@ class SettingsFragment : PreferenceFragment(), SharedPreferences.OnSharedPrefere
     }
 
     /**
-     * Updates the languages available to be selected 
+     * Updates the languages available to be selected.
      *
      * @param listPreference  The preference to be updated
      */
@@ -63,9 +63,9 @@ class SettingsFragment : PreferenceFragment(), SharedPreferences.OnSharedPrefere
 
     /**
      * Updates the summary for the API key preference. Called from both the "pref_api_key" and
-     * "pref_domain" cases in onSharedPreferenceChanged();
+     * "pref_domain" cases in [onSharedPreferenceChanged].
      *
-     * @param key : The API key that the summary should be updated to
+     * @param key  The API key that the summary should be updated to
      */
     fun updateApiPreferenceSummary(key: String) {
         val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
