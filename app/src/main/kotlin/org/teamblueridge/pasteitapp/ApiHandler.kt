@@ -2,15 +2,12 @@ package org.teamblueridge.pasteitapp
 
 import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.content.SharedPreferences
-import android.os.AsyncTask
 import android.support.v7.app.AlertDialog
 import android.util.JsonReader
 import android.util.Log
+import com.pawegio.kandroid.runAsync;
 import org.teamblueridge.utils.NetworkUtil
-import java.io.FileInputStream
-import java.io.IOException
 import java.io.InputStreamReader
 import java.util.*
 
@@ -58,63 +55,40 @@ class ApiHandler {
     /**
      * Does some preparation before calling the GetLanguages ASyncTask.
      *
-     * @param sharedPrefs The shared preferences to be used for determining the domains, etc.
+     * @param sharedPrefs  The shared preferences to be used for determining the domains, etc.
+     * @param context  The context of the calling activity
      */
     fun getLanguagesAvailable(sharedPrefs: SharedPreferences, context: Context) {
-        GetLanguages(context as Activity).execute(UploadDownloadUrlPrep().prepUrl(sharedPrefs,
-                                                                                  "downLangs"),
-                                                  "languages", context)
+        getLanguages(context, UploadDownloadUrlPrep().prepUrl(sharedPrefs, "downLangs"));
     }
 
     /**
-     * ASyncTask to get the languages from the server and write them to a file, "languages" which
-     * can be read later
+     * Downloads the list of languages from the Stikked API.
+     *
+     * @param context  The context of the calling activity
+     * @param languageUrl  The URL from which to fetch the languages
+     * @param filename  The file to which to write the languages. Defaults to "languages".
      */
-    inner class GetLanguages(private val activity: Activity) : AsyncTask<Any, String, Boolean>() {
-        /**
-         * Reads the languages from the server to a file
-         *
-         * @param params  Two Strings: languageUrl and filename; One Context: context
-         *          <li>languageUrl: URL the languages can be fetched from
-         *          <li>filename: The name of the file to be written to
-         *          <li>context: The current context used for writing the file
-         * @return True if the downloaded JSON is valid, false otherwise
-         */
-        override fun doInBackground(vararg params: Any): Boolean {
-            val languageUrl = params[0] as String
-            val filename = params[1] as String
-            val context = params[2] as Context
+    fun getLanguages(context: Context, languageUrl: String, filename: String = "languages")
+    {
+        val activity = context as Activity
+
+        runAsync {
             val languageList = NetworkUtil.readFromUrl(languageUrl)
             context.openFileOutput(filename, Context.MODE_PRIVATE).use {
                 if (languageList.length > 0) {
                     it.write(languageList.toByteArray())
-                    return true
                 } else {
                     it.write("{\"text\":\"Plain Text\"}".toByteArray())
-                    return false
-                }
-            }
-        }
-
-        /**
-         * Displays an alert dialog if there is a problem with the JSON file
-         *
-         * @param valid  True if the downloaded JSON is valid, false otherwise
-         */
-        public override fun onPostExecute(valid: Boolean) {
-            if (!valid) {
-                activity.runOnUiThread {
-                    val builder1 = AlertDialog.Builder(activity)
-                    builder1.setMessage(activity.resources.getString(R.string.error_api_key))
-                    builder1.setCancelable(true)
-                    builder1.setNeutralButton(android.R.string.ok,
-                            object : DialogInterface.OnClickListener {
-                                override fun onClick(dialog: DialogInterface, id: Int) {
-                                    dialog.cancel()
-                                }
-                            })
-                    val alert11 = builder1.create()
-                    alert11.show()
+                    activity.runOnUiThread {
+                        val builder1 = AlertDialog.Builder(activity)
+                        builder1.setMessage(activity.resources.getString(R.string.error_api_key))
+                        builder1.setCancelable(true)
+                        builder1.setNeutralButton(android.R.string.ok,
+                                { dialog, id -> dialog.cancel() })
+                        val alert11 = builder1.create()
+                        alert11.show()
+                    }
                 }
             }
         }
