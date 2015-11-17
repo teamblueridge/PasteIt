@@ -56,8 +56,8 @@ class UploadDownloadUrlPrep {
         }
 
         return when (upDown) {
-            "upCreate" -> mUploadUrl
-            "downLangs" -> mLangDownloadUrl
+            "upCreate"   -> mUploadUrl
+            "downLangs"  -> mLangDownloadUrl
             "downRecent" -> mRecentDownloadUrl
             else -> {
                 Log.e(TAG, "Unknown URL case")
