@@ -8,6 +8,7 @@ import android.util.JsonReader
 import android.util.Log
 import com.pawegio.kandroid.runAsync;
 import org.teamblueridge.utils.NetworkUtil
+import java.io.IOException
 import java.io.InputStreamReader
 import java.util.*
 
@@ -29,26 +30,33 @@ class ApiHandler {
     fun getLanguageArray(context: Context, mPrettyUgly: String): Array<String>? {
         val langListUgly = ArrayList<String>()
         val langListPretty = ArrayList<String>()
-        val reader = JsonReader(InputStreamReader(context.openFileInput("languages"), "UTF-8"))
-        reader.beginObject()
-        while (reader.hasNext()) {
-            langListUgly.add(reader.nextName())
-            langListPretty.add(reader.nextString())
-        }
-        reader.endObject()
-        val languageListUglyStringArray =
-                langListUgly.toArray<String>(arrayOfNulls<String>(langListUgly.size))
-        val languageListPrettyStringArray =
-                langListPretty.toArray<String>(arrayOfNulls<String>(langListPretty.size))
-        reader.close()
 
-        return when (mPrettyUgly) {
-            "pretty" -> languageListPrettyStringArray
-            "ugly" -> languageListUglyStringArray
-            else -> {
-                Log.e(TAG, "Unexpected array description")
-                null
+        try {
+            val reader = JsonReader(InputStreamReader(context.openFileInput("languages"), "UTF-8"))
+            reader.beginObject()
+            while (reader.hasNext()) {
+                langListUgly.add(reader.nextName())
+                langListPretty.add(reader.nextString())
             }
+            reader.endObject()
+            val languageListUglyStringArray =
+                    langListUgly.toArray<String>(arrayOfNulls<String>(langListUgly.size))
+            val languageListPrettyStringArray =
+                    langListPretty.toArray<String>(arrayOfNulls<String>(langListPretty.size))
+            reader.close()
+
+            return when (mPrettyUgly) {
+                "pretty" -> languageListPrettyStringArray
+                "ugly"   -> languageListUglyStringArray
+                else -> {
+                    Log.e(TAG, "Unexpected array description")
+                    null
+                }
+            }
+        } catch (e: IOException) {
+            Log.e(TAG, "Error reading languages file.")
+            Log.e(TAG, e.toString())
+            return null
         }
     }
 
