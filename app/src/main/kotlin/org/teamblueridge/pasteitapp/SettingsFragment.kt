@@ -1,5 +1,6 @@
 package org.teamblueridge.pasteitapp
 
+import android.app.Activity
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.ListPreference
@@ -39,12 +40,12 @@ class SettingsFragment : PreferenceFragment(), SharedPreferences.OnSharedPrefere
                 preferenceScreen = null
                 addPreferencesFromResource(R.xml.preferences)
                 updateApiPreferenceSummary("pref_api_key")
-                ApiHandler().getLanguagesAvailable(sharedPreferences, activity)
+                ApiHandler().getLanguages(context as Activity,
+                                          UploadDownloadUrlPrep().prepUrl(sharedPreferences,
+                                          UploadDownloadUrlPrep.DOWNLOAD_LANGS));
             }
-            "pref_name" -> {}
             "pref_default_language" -> {
-                val listPreference = findPreference(key) as ListPreference
-                findPreference(key).summary = listPreference.entry
+                findPreference(key).summary = (findPreference(key) as ListPreference).entry
             }
             else -> {}
         }
@@ -56,9 +57,9 @@ class SettingsFragment : PreferenceFragment(), SharedPreferences.OnSharedPrefere
      * @param listPreference  The preference to be updated
      */
     protected fun setListPreferenceData(listPreference: ListPreference) {
-        listPreference.entries = ApiHandler().getLanguageArray(activity, "pretty")
+        listPreference.entries = ApiHandler().getLanguageArray(activity, ApiHandler.PRETTY_LIST)
         listPreference.setDefaultValue("1")
-        listPreference.entryValues = ApiHandler().getLanguageArray(activity, "ugly")
+        listPreference.entryValues = ApiHandler().getLanguageArray(activity, ApiHandler.UGLY_LIST)
     }
 
     /**
@@ -69,11 +70,11 @@ class SettingsFragment : PreferenceFragment(), SharedPreferences.OnSharedPrefere
      */
     fun updateApiPreferenceSummary(key: String) {
         val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
-        if (!prefs.getString(key, "").isEmpty())
-            findPreference(key).summary = getString(R.string.pref_api_key_summary,
-                    prefs.getString(key, ""))
-        else
-            findPreference(key).summary = getString(R.string.pref_api_key_summary_ifempty)
+        findPreference(key).summary =
+            if (!prefs.getString(key, "").isEmpty())
+                getString(R.string.pref_api_key_summary, prefs.getString(key, ""))
+            else
+                getString(R.string.pref_api_key_summary_ifempty)
     }
 
 }

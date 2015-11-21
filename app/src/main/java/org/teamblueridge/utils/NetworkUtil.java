@@ -20,7 +20,7 @@ public class NetworkUtil {
      * Checks whether the device currently has an active network connection
      *
      * @param context the Context
-     * @return <code>true</code> if connected to WiFi or a mobile network
+     * @return true if connected to WiFi or a mobile network
      */
     public static boolean isConnectedToNetwork(Context context) {
         final ConnectivityManager connectivityManager = ((ConnectivityManager) context

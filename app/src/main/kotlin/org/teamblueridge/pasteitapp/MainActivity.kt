@@ -1,6 +1,7 @@
 package org.teamblueridge.pasteitapp
 
 import android.Manifest
+import android.app.Activity
 import android.app.ProgressDialog
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -25,14 +26,13 @@ import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.activity_main.*
 import kotlinx.android.synthetic.fragment_paste.*
 import org.teamblueridge.utils.NetworkUtil
-import org.teamblueridge.utils.SysBarTintManager
 import java.io.*
-import java.net.HttpURLConnection
 import java.net.URL
 
 import com.pawegio.kandroid.runAsync
 import com.pawegio.kandroid.runOnUiThread
 import com.pawegio.kandroid.toast
+import javax.net.ssl.HttpsURLConnection
 
 class MainActivity : AppCompatActivity() {
 
@@ -49,8 +49,8 @@ class MainActivity : AppCompatActivity() {
         // Set-up the paste fragment and give it a name so we can track it
         if (savedInstanceState == null) {
             fragmentManager.beginTransaction()
-                    .add(R.id.container, PasteFragment(), "PasteFragment")
-                    .commit()
+                .add(R.id.container, PasteFragment(), "PasteFragment")
+                .commit()
         }
 
         // Set-up up navigation
@@ -66,21 +66,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Set up the status bar tint using the CarbonROM SysBarTintManager
-        if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-                && (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT)) {
-            SysBarTintManager.setupTranslucency(this, true, false)
-            val mTintManager = SysBarTintManager(this)
-            mTintManager.isStatusBarTintEnabled = true
-            mTintManager.isActionBarTintEnabled = true
-            mTintManager.setStatusBarTintColor(ContextCompat.getColor(this, R.color.blue_700))
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val window = this.window
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             window.statusBarColor = ContextCompat.getColor(this, R.color.blue_700)
         }
-
     }
 
     public override fun onStart() {
@@ -89,17 +80,17 @@ class MainActivity : AppCompatActivity() {
         mReceivedAction = mReceivedIntent!!.action
         if (mReceivedAction == Intent.ACTION_VIEW || mReceivedAction == Intent.ACTION_EDIT) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
+                != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat
-                        .requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
+                    .requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
             }
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED) {
+                == PackageManager.PERMISSION_GRANTED) {
                 loadFile()
             } else {
                 toast(getString(R.string.request_permissions))
                 ActivityCompat.requestPermissions(this,
-                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
                 loadFile()
             }
             mReceivedAction = Intent.ACTION_DEFAULT
@@ -108,11 +99,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Check if the "languages" file exists
-        if (baseContext.getFileStreamPath("languages").exists()) {
+        if (File("languages").exists()) {
             populateSpinner()
         } else {
             val prefs = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
-            ApiHandler().getLanguagesAvailable(prefs, this)
+            ApiHandler().getLanguages(this as Activity, UploadDownloadUrlPrep().prepUrl(prefs,
+                                      UploadDownloadUrlPrep.DOWNLOAD_LANGS));
             populateSpinner()
         }
     }
@@ -145,12 +137,10 @@ class MainActivity : AppCompatActivity() {
      * Does some preparation before finally calling the UploadPaste ASyncTask
      */
     fun prepForPaste() {
-        val pasteContentString = paste_content_edittext.text.toString()
-        val languageSelected = language_spinner.selectedItemPosition
-        val languageListStringArray = ApiHandler().getLanguageArray(applicationContext, "ugly")
-
-        val language = languageListStringArray!![languageSelected]
-        if (!pasteContentString.isEmpty()) {
+        val languageListStringArray = ApiHandler().getLanguageArray(applicationContext,
+                                                                    ApiHandler.UGLY_LIST)
+        val language = languageListStringArray[language_spinner.selectedItemPosition]
+        if (!paste_content_edittext.text.toString().isEmpty()) {
             if (NetworkUtil.isConnectedToNetwork(this)) {
                 if (language != "0") {
                     doPaste(if (!language.isEmpty()) language else "text")
@@ -176,24 +166,24 @@ class MainActivity : AppCompatActivity() {
      */
     fun doPaste(receivedLanguage: String) {
         val httpUserAgent = ("Paste It v${getString(R.string.version_name)}" +
-                ", an Android app for pasting to Stikked " +
-                "(https://play.google.com/store/apps/details?id=org.teamblueridge.pasteitapp)")
+            ", an Android app for pasting to Stikked " +
+            "(https://play.google.com/store/apps/details?id=org.teamblueridge.pasteitapp)")
         val prefs = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
         val pDialogUpload = ProgressDialog(this@MainActivity)
         val language = if (!receivedLanguage.isEmpty()) receivedLanguage else "text"
         val title = paste_name_edittext.text.toString()
         val text = paste_content_edittext.text.toString()
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val mUserName: String
 
         //Ensure username is set, if not, default to "mobile user"
-        if (!prefs.getString("pref_name", "").isEmpty())
-            mUserName = prefs.getString("pref_name", "")
-        else
-            mUserName = "Mobile User " + getString(R.string.version_name)
+        val mUserName =
+            if (!prefs.getString("pref_name", "").isEmpty())
+                prefs.getString("pref_name", "")
+            else
+                "Mobile User " + getString(R.string.version_name)
 
-        val url = URL(UploadDownloadUrlPrep().prepUrl(prefs, "upCreate"))
-        val urlConnection = url.openConnection() as HttpURLConnection
+        val url = URL(UploadDownloadUrlPrep().prepUrl(prefs, UploadDownloadUrlPrep.UPLOAD_PASTE))
+        val urlConnection = url.openConnection() as HttpsURLConnection
 
         pDialogUpload.setMessage(getString(R.string.paste_upload))
         pDialogUpload.isIndeterminate = false
@@ -268,13 +258,15 @@ class MainActivity : AppCompatActivity() {
      * the API handler.
      */
     fun populateSpinner() {
-        val langListPretty = ApiHandler().getLanguageArray(applicationContext, "pretty")
+        val langListPretty = ApiHandler().getLanguageArray(applicationContext,
+                                                           ApiHandler.PRETTY_LIST)
         val prefs = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
         val positionListPref = prefs.getString("pref_default_language", "-1")
         val uglyList = ArrayAdapter(applicationContext, R.layout.spinner_item,
-                ApiHandler().getLanguageArray(applicationContext, "ugly"))
+                                    ApiHandler().getLanguageArray(applicationContext,
+                                                                  ApiHandler.UGLY_LIST))
         val adapter = ArrayAdapter(applicationContext,
-                R.layout.spinner_item, langListPretty)
+                                   R.layout.spinner_item, langListPretty)
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
         language_spinner.adapter = adapter
         language_spinner.setSelection(uglyList.getPosition(positionListPref))

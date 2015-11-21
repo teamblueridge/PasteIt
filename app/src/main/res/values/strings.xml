@@ -40,7 +40,7 @@
     <string name="pref_powered_by">Powered by Stikked</string>
 
     <!--Menu-->
-    <string name="action_paste">Paste!</string>
+    <string name="action_paste">Paste</string>
     <string name="action_settings">Settings</string>
 
 </resources>
