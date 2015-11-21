@@ -265,8 +265,7 @@ class MainActivity : AppCompatActivity() {
         val uglyList = ArrayAdapter(applicationContext, R.layout.spinner_item,
                                     ApiHandler().getLanguageArray(applicationContext,
                                                                   ApiHandler.UGLY_LIST))
-        val adapter = ArrayAdapter(applicationContext,
-                                   R.layout.spinner_item, langListPretty)
+        val adapter = ArrayAdapter(applicationContext, R.layout.spinner_item, langListPretty)
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
         language_spinner.adapter = adapter
         language_spinner.setSelection(uglyList.getPosition(positionListPref))
