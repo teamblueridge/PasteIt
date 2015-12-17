@@ -1,10 +1,10 @@
 language: android
 
 before_script:
-  - sudo service mysql stop || true
-  - sudo service postgresql stop || true
-  - sudo service mongodb stop ||
   - sudo service --status-all
+  - sudo service mysql stop
+  - sudo service postgresql stop
+  - sudo service mongodb stop
 
 android:
   components:
