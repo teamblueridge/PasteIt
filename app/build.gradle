@@ -3,15 +3,15 @@ apply plugin: 'kotlin-android'
 
 def increaseVersionCode() {
     def versionPropsFile = file('version.properties')
+    def Properties versionProps = new Properties()
     if (versionPropsFile.canRead()) {
-        def Properties versionProps = new Properties()
         versionProps.load(new FileInputStream(versionPropsFile))
         def code = versionProps['VERSION_CODE'].toInteger() + 1
         versionProps['VERSION_CODE'] = code.toString()
         versionProps.store(versionPropsFile.newWriter(), null)
         return code
     } else {
-        throw new GradleException("Could not read version.properties!")
+        return 0
     }
 }
 
