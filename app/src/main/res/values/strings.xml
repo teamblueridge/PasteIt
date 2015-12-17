@@ -30,7 +30,8 @@
     <string name="pref_url">Display URL</string>
     <string name="pref_url_summary">Appears under the content box</string>
     <string name="pref_api_key">API Key</string>
-    <string name="pref_api_key_summary">Current key: %s</string><!--%s is the current API key-->
+    <string name="pref_api_key_summary">Current key: %s</string>
+    <!--%s is the current API key-->
     <string name="pref_api_key_summary_ifempty">An API key may be required for some sites</string>
     <string name="pref_default_language">Default upload language</string>
     <string name="pref_default_language_summary">Default language for uploads</string>
@@ -42,5 +43,7 @@
     <!--Menu-->
     <string name="action_paste">Paste</string>
     <string name="action_settings">Settings</string>
+    <string name="title_paste_list">Pastes</string>
+    <string name="title_paste_detail">Paste Detail</string>
 
 </resources>

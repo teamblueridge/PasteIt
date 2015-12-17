@@ -5,6 +5,8 @@
           android:icon="@drawable/ic_send"
           android:title="@string/action_paste"
           app:showAsAction="always|withText" />
+    <item android:id="@+id/action_list"
+          android:title="List" />
     <item android:id="@+id/action_settings"
         android:icon="@drawable/ic_settings"
         android:orderInCategory="100"

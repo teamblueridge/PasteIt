@@ -23,15 +23,14 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
 import android.widget.ArrayAdapter
-import kotlinx.android.synthetic.activity_main.*
-import kotlinx.android.synthetic.fragment_paste.*
-import org.teamblueridge.utils.NetworkUtil
-import java.io.*
-import java.net.URL
-
 import com.pawegio.kandroid.runAsync
 import com.pawegio.kandroid.runOnUiThread
 import com.pawegio.kandroid.toast
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_paste.*
+import org.teamblueridge.utils.NetworkUtil
+import java.io.*
+import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
 class MainActivity : AppCompatActivity() {
@@ -49,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         // Set-up the paste fragment and give it a name so we can track it
         if (savedInstanceState == null) {
             fragmentManager.beginTransaction()
-                .add(R.id.container, PasteFragment(), "PasteFragment")
+                .add(R.id.container, CreatePasteFragment(), "PasteFragment")
                 .commit()
         }
 
@@ -121,8 +120,11 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.action_settings -> {
-                val intent = Intent(this, SettingsActivity::class.java)
-                startActivity(intent)
+                startActivity(Intent(this, SettingsActivity::class.java))
+                true
+            }
+            R.id.action_list ->
+            {
                 true
             }
             android.R.id.home -> {
@@ -166,8 +168,7 @@ class MainActivity : AppCompatActivity() {
      */
     fun doPaste(receivedLanguage: String) {
         val httpUserAgent = ("Paste It v${getString(R.string.version_name)}" +
-            ", an Android app for pasting to Stikked " +
-            "(https://play.google.com/store/apps/details?id=org.teamblueridge.pasteitapp)")
+            ", an Android app for pasting to Stikked (https://goo.gl/LmVtEC)")
         val prefs = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
         val pDialogUpload = ProgressDialog(this@MainActivity)
         val language = if (!receivedLanguage.isEmpty()) receivedLanguage else "text"

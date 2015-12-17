@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/blue_500</item>
         <item name="colorPrimaryDark">@color/blue_700</item>
@@ -10,6 +11,7 @@
         <item name="windowActionBar">false</item>
         <item name="windowActionModeOverlay">true</item>
     </style>
+
     <style name="ActionBarThemeOverlay" parent="">
         <item name="colorPrimary">@color/blue_500</item>
         <item name="colorPrimaryDark">@color/blue_700</item>
@@ -17,4 +19,8 @@
         <item name="android:textColorSecondary">@color/grey_1000w</item>
         <item name="android:textColorTertiary">@color/grey_1000w</item>
     </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 </resources>
