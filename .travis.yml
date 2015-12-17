@@ -1,10 +1,14 @@
 language: android
+
+before_script:
+  - sudo service mysql stop || true
+  - sudo service postgresql stop || true
+  - sudo service mongodb stop ||
+  - sudo service --status-all
+
 android:
   components:
     - tools
     - build-tools-23.0.2
     - android-23
     - extra-android-m2repository
-
-# as per http://blog.travis-ci.com/2014-12-17-faster-builds-with-container-based-infrastructure/
-sudo: false
