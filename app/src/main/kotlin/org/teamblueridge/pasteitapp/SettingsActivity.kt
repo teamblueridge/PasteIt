@@ -16,8 +16,8 @@ class SettingsActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         // Set-up up navigation
-        supportActionBar.setHomeButtonEnabled(true)
-        supportActionBar.setDisplayHomeAsUpEnabled(true)
+        supportActionBar!!.setHomeButtonEnabled(true)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val window = this.window

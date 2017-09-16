@@ -22,7 +22,9 @@ import android.util.Patterns
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
+import android.widget.ProgressBar
 import com.pawegio.kandroid.runAsync
 import com.pawegio.kandroid.runOnUiThread
 import com.pawegio.kandroid.toast
@@ -57,11 +59,11 @@ class MainActivity : AppCompatActivity() {
             /* Check if we have anything on the stack. If we do, we need to have the back button
              * display in in the ActionBar */
             if (fragmentManager.backStackEntryCount > 0) {
-                supportActionBar.setHomeButtonEnabled(true)
-                supportActionBar.setDisplayHomeAsUpEnabled(true)
+                supportActionBar!!.setHomeButtonEnabled(true)
+                supportActionBar!!.setDisplayHomeAsUpEnabled(true)
             } else {
-                supportActionBar.setHomeButtonEnabled(false)
-                supportActionBar.setDisplayHomeAsUpEnabled(true)
+                supportActionBar!!.setHomeButtonEnabled(false)
+                supportActionBar!!.setDisplayHomeAsUpEnabled(true)
             }
         }
 
@@ -116,6 +118,11 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_paste -> {
+                val view = this.currentFocus
+                if (view != null) {
+                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(view.windowToken, 0)
+                }
                 prepForPaste()
                 true
             }
@@ -222,8 +229,14 @@ class MainActivity : AppCompatActivity() {
 
             runOnUiThread {
                 if (Patterns.WEB_URL.matcher(pasteUrl).matches()) {
-                    paste_url_label.text = Html.fromHtml("<a href=\"$pasteUrl\">$pasteUrl</a>")
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                        paste_url_label.text = Html.fromHtml("<a href=\"$pasteUrl\">$pasteUrl</a>", Html.FROM_HTML_MODE_LEGACY)
+                    } else {
+                        paste_url_label.text = Html.fromHtml("<a href=\"$pasteUrl\">$pasteUrl</a>")
+                    }
                     paste_url_label.movementMethod = LinkMovementMethod.getInstance()
+                } else if (pasteUrl == "Invalid API key") {
+                    toast(getString(R.string.invalid_api_key))
                 } else {
                     Log.e(TAG, "Bad URL: URL received was $pasteUrl")
                     paste_url_label.text = getString(R.string.invalid_url)

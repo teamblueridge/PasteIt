@@ -3,7 +3,7 @@
 
     <!--General; DO NOT TRANSLATE-->
     <string name="app_name" translatable="false">Paste It</string>
-    <string name="version_name" translatable="false">6.1.2</string>
+    <string name="version_name" translatable="false">7.0.0</string>
     <string name="tbr" translatable="false">Team BlueRidge</string>
 
     <!--Main UI-->
@@ -18,6 +18,7 @@
     <string name="request_permissions">Please accept the permission to open files.</string>
     <string name="invalid_language">Choose another language</string>
     <string name="invalid_url">There was an error with the paste URL</string>
+    <string name="invalid_api_key">The API key is invalid or incorrect for the chosen domain</string>
     <string name="error_api_key">Your API key is incorrect. Please fix it in settings.
         The only language available for uploads is Plain Text</string>
 
