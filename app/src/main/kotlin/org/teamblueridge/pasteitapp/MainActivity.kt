@@ -30,8 +30,10 @@ import com.pawegio.kandroid.runOnUiThread
 import com.pawegio.kandroid.toast
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_paste.*
+import kotlinx.android.synthetic.main.spinner_item.*
 import org.teamblueridge.utils.NetworkUtil
 import java.io.*
+import java.net.ConnectException
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
@@ -115,45 +117,39 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_paste -> {
-                val view = this.currentFocus
-                if (view != null) {
-                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    imm.hideSoftInputFromWindow(view.windowToken, 0)
-                }
-                prepForPaste()
-                true
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.action_paste -> {
+            val view = this.currentFocus
+            if (view != null) {
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(view.windowToken, 0)
             }
-            R.id.action_settings -> {
-                startActivity(Intent(this, SettingsActivity::class.java))
-                true
-            }
-            R.id.action_list ->
-            {
-                true
-            }
-            android.R.id.home -> {
-                fragmentManager.popBackStack()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
+            prepForPaste()
+            true
         }
+        R.id.action_settings -> {
+            startActivity(Intent(this, SettingsActivity::class.java))
+            true
+        }
+        R.id.action_list -> true
+        android.R.id.home -> {
+            fragmentManager.popBackStack()
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 
     /**
      * Does some preparation before finally calling the UploadPaste ASyncTask
      */
     fun prepForPaste() {
-        val languageListStringArray = ApiHandler().getLanguageArray(applicationContext,
-                                                                    ApiHandler.UGLY_LIST)
-        val language = languageListStringArray[language_spinner.selectedItemPosition]
+        val languages = ApiHandler().getLanguages(applicationContext)
+        val chosenLang = languages.getKeyByValue(language_spinner.selectedItem) ?: return
         if (!paste_content_edittext.text.toString().isEmpty()) {
             if (NetworkUtil.isConnectedToNetwork(this)) {
-                if (language != "0") {
-                    doPaste(if (!language.isEmpty()) language else "text")
-                    toast(getString(R.string.paste_toast))
+                if (chosenLang != "0") {
+                    val success = doPaste(if (!chosenLang.isEmpty()) chosenLang else "text")
+                    if (success) toast(getString(R.string.paste_toast))
                     paste_name_edittext.setText("")
                     paste_content_edittext.setText("")
                 } else {
@@ -167,13 +163,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun <K, V> Map<K, V>.getKeyByValue(value: V): K? {
+        for ((k, v) in this) if (v == value) return k
+        return null
+    }
+
     /**
      * Uploads the paste to the server then receives the URL of the paste and displays it in the
      * Paste URL Label.
      *
      * @param receivedLanguage  Language to upload the paste in
      */
-    fun doPaste(receivedLanguage: String) {
+    fun doPaste(receivedLanguage: String): Boolean {
         val httpUserAgent = ("Paste It v${getString(R.string.version_name)}" +
             ", an Android app for pasting to Stikked (https://goo.gl/LmVtEC)")
         val prefs = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
@@ -185,20 +186,28 @@ class MainActivity : AppCompatActivity() {
 
         //Ensure username is set, if not, default to "mobile user"
         val mUserName =
-            if (!prefs.getString("pref_name", "").isEmpty())
-                prefs.getString("pref_name", "")
-            else
-                "Mobile User " + getString(R.string.version_name)
+            if (!prefs.getString("pref_name", "").isEmpty()) prefs.getString("pref_name", "")
+            else  "Mobile User " + getString(R.string.version_name)
 
-        val url = URL(UploadDownloadUrlPrep().prepUrl(prefs, UploadDownloadUrlPrep.UPLOAD_PASTE))
-        val urlConnection = url.openConnection() as HttpsURLConnection
 
         pDialogUpload.setMessage(getString(R.string.paste_upload))
         pDialogUpload.isIndeterminate = false
-        pDialogUpload.setCancelable(false)
-        pDialogUpload.show()
+        pDialogUpload.setCancelable(true)
+        runOnUiThread {
+            pDialogUpload.show()
+        }
+        var success: Boolean = false
         runAsync {
             // HTTP Header data
+            if (!NetworkUtil.isHostAvailable(this, prefs.getString("pref_domain", ""))) {
+                pDialogUpload.cancel()
+                runOnUiThread {
+                    toast("Unable to reach paste server. Check settings and try again.")
+                }
+                return@runAsync
+            }
+            val url = URL(UploadDownloadUrlPrep().prepUrl(prefs, UploadDownloadUrlPrep.UPLOAD_PASTE))
+            val urlConnection = url.openConnection() as HttpsURLConnection
             urlConnection.requestMethod = "POST"
             urlConnection.doInput = true
             urlConnection.doOutput = true
@@ -209,13 +218,13 @@ class MainActivity : AppCompatActivity() {
                     .appendQueryParameter("name", mUserName)
                     .appendQueryParameter("lang", language)
             val query = builder.build().encodedQuery
-            val os = urlConnection.outputStream
-            val writer = BufferedWriter(OutputStreamWriter(os, "UTF-8"))
-            writer.write(query)
-            writer.flush()
-            writer.close()
-            os.close()
-            urlConnection.connect()
+            urlConnection.outputStream.use {
+                val writer = BufferedWriter(OutputStreamWriter(it, "UTF-8"))
+                writer.write(query)
+                writer.flush()
+                writer.close()
+                it.close()
+            }
 
             //Get the URL of the paste
             val urlStringBuilder = StringBuilder()
@@ -227,22 +236,37 @@ class MainActivity : AppCompatActivity() {
             if (Patterns.WEB_URL.matcher(pasteUrl).matches())
                 clipboard.primaryClip = ClipData.newPlainText("PasteIt", pasteUrl)
 
-            runOnUiThread {
-                if (Patterns.WEB_URL.matcher(pasteUrl).matches()) {
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                        paste_url_label.text = Html.fromHtml("<a href=\"$pasteUrl\">$pasteUrl</a>", Html.FROM_HTML_MODE_LEGACY)
-                    } else {
-                        paste_url_label.text = Html.fromHtml("<a href=\"$pasteUrl\">$pasteUrl</a>")
-                    }
-                    paste_url_label.movementMethod = LinkMovementMethod.getInstance()
-                } else if (pasteUrl == "Invalid API key") {
-                    toast(getString(R.string.invalid_api_key))
+            val labelText: CharSequence
+            val toastText: String
+            if (Patterns.WEB_URL.matcher(pasteUrl).matches()) {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                    labelText = Html.fromHtml("<a href=\"$pasteUrl\">$pasteUrl</a>", Html.FROM_HTML_MODE_LEGACY)
                 } else {
-                    Log.e(TAG, "Bad URL: URL received was $pasteUrl")
-                    paste_url_label.text = getString(R.string.invalid_url)
+                    labelText = Html.fromHtml("<a href=\"$pasteUrl\">$pasteUrl</a>")
+                }
+                toastText = ""
+                success = true
+            } else if (pasteUrl == "Invalid API key") {
+                toastText = getString(R.string.invalid_api_key)
+                labelText = ""
+                success = false
+            } else {
+                Log.e(TAG, "Bad URL: URL received was $pasteUrl")
+                labelText = getString(R.string.invalid_url)
+                toastText = ""
+                success = false
+            }
+
+            runOnUiThread {
+                paste_url_label.text = labelText
+                if (success) {
+                    paste_url_label.movementMethod = LinkMovementMethod.getInstance()
+                } else {
+                    toast(toastText)
                 }
             }
         }
+        return success
     }
 
     /**
@@ -272,17 +296,13 @@ class MainActivity : AppCompatActivity() {
      * the API handler.
      */
     fun populateSpinner() {
-        val langListPretty = ApiHandler().getLanguageArray(applicationContext,
-                                                           ApiHandler.PRETTY_LIST)
+        val languages = ApiHandler().getLanguages(applicationContext)
         val prefs = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
-        val positionListPref = prefs.getString("pref_default_language", "-1")
-        val uglyList = ArrayAdapter(applicationContext, R.layout.spinner_item,
-                                    ApiHandler().getLanguageArray(applicationContext,
-                                                                  ApiHandler.UGLY_LIST))
-        val adapter = ArrayAdapter(applicationContext, R.layout.spinner_item, langListPretty)
+        val positionListPref = prefs.getString("pref_default_language", "text")
+        val adapter = ArrayAdapter(applicationContext, R.layout.spinner_item, languages.values.toList())
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
         language_spinner.adapter = adapter
-        language_spinner.setSelection(uglyList.getPosition(positionListPref))
+        language_spinner.setSelection(languages.keys.toList().indexOf(positionListPref))
     }
 
 }

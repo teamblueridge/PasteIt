@@ -40,7 +40,7 @@ class SettingsFragment : PreferenceFragment(), SharedPreferences.OnSharedPrefere
                 preferenceScreen = null
                 addPreferencesFromResource(R.xml.preferences)
                 updateApiPreferenceSummary("pref_api_key")
-                ApiHandler().getLanguages(context as Activity,
+                ApiHandler().getLanguages(activity,
                                           UploadDownloadUrlPrep().prepUrl(sharedPreferences,
                                           UploadDownloadUrlPrep.DOWNLOAD_LANGS));
             }
@@ -57,9 +57,9 @@ class SettingsFragment : PreferenceFragment(), SharedPreferences.OnSharedPrefere
      * @param listPreference  The preference to be updated
      */
     protected fun setListPreferenceData(listPreference: ListPreference) {
-        listPreference.entries = ApiHandler().getLanguageArray(activity, ApiHandler.PRETTY_LIST)
+        listPreference.entries = ApiHandler().getLanguages(activity).keys.toTypedArray()
         listPreference.setDefaultValue("1")
-        listPreference.entryValues = ApiHandler().getLanguageArray(activity, ApiHandler.UGLY_LIST)
+        listPreference.entryValues = ApiHandler().getLanguages(activity).values.toTypedArray()
     }
 
     /**

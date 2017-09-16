@@ -10,6 +10,7 @@ import org.teamblueridge.utils.NetworkUtil
 import java.io.IOException
 import java.io.InputStreamReader
 import java.util.*
+import kotlin.collections.HashMap
 
 /**
  * Communicates with the Stikked API to get the data necessary
@@ -19,8 +20,6 @@ import java.util.*
  */
 class ApiHandler {
     companion object {
-        public val UGLY_LIST = 1
-        public val PRETTY_LIST = 2
         private val TAG = "TeamBlueRidge"
     }
 
@@ -31,45 +30,23 @@ class ApiHandler {
      * @param listType  Used in order to identify which Array<String> to use
      * @return a Array<String>, either pretty or ugly, depending on what is needed
      */
-    fun getLanguageArray(context: Context, listType: Int): Array<String> {
-        val langListUgly = ArrayList<String>()
-        val langListPretty = ArrayList<String>()
+    fun getLanguages(context: Context): Map<String, String> {
+        val langMap = TreeMap<String, String>()
         try {
             val reader = JsonReader(InputStreamReader(context.openFileInput("languages"), "UTF-8"))
-
             reader.beginObject()
             while (reader.hasNext()) {
-                langListUgly.add(reader.nextName())
-                langListPretty.add(reader.nextString())
+                langMap.put(reader.nextName(), reader.nextString())
             }
             reader.endObject()
             reader.close()
-
-            return when (listType) {
-                PRETTY_LIST ->
-                    langListPretty.toArray<String>(arrayOfNulls<String>(langListPretty.size))
-                UGLY_LIST ->
-                    langListUgly.toArray<String>(arrayOfNulls<String>(langListUgly.size))
-                else -> {
-                    Log.e(TAG, "Unexpected array description")
-                    arrayOf("")
-                }
-            }
         } catch (e: IOException) {
-            Log.e(TAG, "Error reading languages file.")
+            Log.e(TAG, "Error reading languages file")
             Log.e(TAG, e.toString())
-            /* At least return an array to prevent an NPE */
-            return when (listType) {
-                PRETTY_LIST ->
-                    arrayOf("Plain Text")
-                UGLY_LIST ->
-                    arrayOf("text")
-                else -> {
-                    Log.e(TAG, "Unexpected array description")
-                    arrayOf("")
-                }
-            }
         }
+        langMap.remove("0")
+        return langMap.toSortedMap()
+
     }
 
     /**
@@ -82,9 +59,9 @@ class ApiHandler {
     fun getLanguages(activity: Activity, languageUrl: String, filename: String = "languages")
     {
         runAsync {
-            val languageList = NetworkUtil.readFromUrl(languageUrl)
+            val languageList = NetworkUtil.readFromUrl(activity, languageUrl)
             activity.openFileOutput(filename, Context.MODE_PRIVATE).use {
-                if (languageList.length > 0) {
+                if (languageList.isNotEmpty()) {
                     it.write(languageList.toByteArray())
                 } else {
                     it.write("{\"text\":\"Plain Text\"}".toByteArray())
@@ -92,8 +69,7 @@ class ApiHandler {
                         val alertBuilder = AlertDialog.Builder(activity)
                         alertBuilder.setMessage(activity.resources.getString(R.string.error_api_key))
                         alertBuilder.setCancelable(true)
-                        alertBuilder.setNeutralButton(android.R.string.ok,
-                                                  { dialog, id -> dialog.cancel() })
+                        alertBuilder.setNeutralButton(android.R.string.ok) { dialog, id -> dialog.cancel() }
                         val alert = alertBuilder.create()
                         alert.show()
                     }
